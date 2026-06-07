@@ -17,7 +17,7 @@ public class ModelEntry
 
     /// <summary>Modality flag used to filter the Change Model dialog when an instance has shown
     /// it can't load multimodal models (e.g. CLIP load failure on vastai/ollama:0.30.0).
-    /// Values: "text", "+vis", "+aud", "+v/a", "multi", "" (unknown — treated as safe).
+    /// Values: "text", "+vis", "+aud", "+v/a", "multi", "" (unknown - treated as safe).
     /// Populated automatically when adding a model via HF search; can be edited later.</summary>
     [JsonPropertyName("modality")] public string Modality { get; set; } = "";
 
@@ -34,5 +34,5 @@ public class ModelEntry
 
     [JsonIgnore] public string Key { get; set; } = "";   // populated when loaded from dict
 
-    public override string ToString() => $"{Key}  —  {Name}";
+    public override string ToString() => $"{Key}  -  {Name}";
 }

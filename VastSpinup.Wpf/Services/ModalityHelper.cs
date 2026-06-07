@@ -15,7 +15,7 @@ public static class ModalityHelper
 
     /// <summary>HF API returns pipeline_tag + a tags list. Both are used because GGUF quant repos
     /// often inherit pipeline_tag="text-generation" from a non-multimodal template even when the
-    /// base model is multimodal — the tags list catches what pipeline_tag misses.</summary>
+    /// base model is multimodal - the tags list catches what pipeline_tag misses.</summary>
     public static string FromHfModel(HuggingFaceModel m)
     {
         var pt = (m.PipelineTag ?? "").ToLowerInvariant();
@@ -48,7 +48,7 @@ public static class ModalityHelper
         return Unknown;
     }
 
-    /// <summary>Ollama-library results carry an authoritative Capabilities list — no guessing.</summary>
+    /// <summary>Ollama-library results carry an authoritative Capabilities list - no guessing.</summary>
     public static string FromOllamaResult(OllamaSearchResult r)
     {
         bool hasVision = r.Capabilities.Any(c => c.Equals("vision", StringComparison.OrdinalIgnoreCase));

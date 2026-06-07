@@ -7,7 +7,7 @@ namespace VastSpinup.Services;
 /// Persists the vast.ai template_hash for our Ollama spinup template across sessions.
 /// Once we successfully spin up an instance, vast.ai assigns a template_hash derived from
 /// (image + onstart + env + ports). Future searches filter by this hash to identify
-/// hosts that have already cached our docker image — dramatically faster boots.
+/// hosts that have already cached our docker image - dramatically faster boots.
 /// </summary>
 public class TemplateHashService
 {

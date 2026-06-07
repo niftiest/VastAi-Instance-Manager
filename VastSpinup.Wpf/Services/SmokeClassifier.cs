@@ -2,14 +2,14 @@ namespace VastSpinup.Services;
 
 /// <summary>
 /// Classifies post-pull smoke-test failures returned by Ollama's llama-server stderr.
-/// Pure logic — no I/O, no UI — so it can be exhaustively tested as patterns drift
+/// Pure logic - no I/O, no UI - so it can be exhaustively tested as patterns drift
 /// across Ollama and llama.cpp versions. Add new patterns here, not in the orchestrator.
 /// </summary>
 public static class SmokeClassifier
 {
     public enum Category
     {
-        /// <summary>Smoke succeeded — no error string.</summary>
+        /// <summary>Smoke succeeded - no error string.</summary>
         Ok,
         /// <summary>Host GPU/driver/CUDA stack is broken. Different host needed.</summary>
         BrokenHost,

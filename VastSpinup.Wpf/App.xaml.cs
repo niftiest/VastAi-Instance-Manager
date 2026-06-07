@@ -17,7 +17,7 @@ public partial class App : Application
             AppLog.Error("DispatcherUnhandledException", args.Exception);
             MessageBox.Show(
                 $"An unexpected error occurred:\n\n{args.Exception.Message}\n\nThe app will keep running. See {AppPaths.AppLogFile} for details.",
-                "VastSpinup — unhandled error", MessageBoxButton.OK, MessageBoxImage.Error);
+                "VastSpinup - unhandled error", MessageBoxButton.OK, MessageBoxImage.Error);
             args.Handled = true;
         };
 

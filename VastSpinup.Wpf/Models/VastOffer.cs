@@ -33,12 +33,12 @@ public class VastOffer
     {
         get
         {
-            if (string.IsNullOrWhiteSpace(Geolocation)) return "—";
+            if (string.IsNullOrWhiteSpace(Geolocation)) return "-";
             var parts = Geolocation.Split(',')
                 .Select(p => p.Trim())
                 .Where(p => p.Length > 0);
             var joined = string.Join(", ", parts);
-            return joined.Length == 0 ? "—" : joined;
+            return joined.Length == 0 ? "-" : joined;
         }
     }
 

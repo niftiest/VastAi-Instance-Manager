@@ -76,7 +76,7 @@ public class OfferRankingTests
         var pricyFast = Offer(2, 1, 2.417, 24, 1200);  // ~57 t/s @ $2.417
         var picks = OfferRanking.Compute(new[] { cheapSlow, pricyFast }, Model());
         Assert.Same(pricyFast, picks.BestValue);
-        // Sanity check: BestPrice is still the cheap one — they're distinct picks now.
+        // Sanity check: BestPrice is still the cheap one - they're distinct picks now.
         Assert.Same(cheapSlow, picks.BestPrice);
         Assert.NotSame(picks.BestPrice, picks.BestValue);
     }

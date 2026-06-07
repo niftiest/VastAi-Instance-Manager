@@ -5,7 +5,7 @@ namespace VastSpinup.Wpf.Orchestration;
 
 /// <summary>
 /// Drives the unload → delete → pull → smoke-test pipeline that swaps the loaded model on
-/// a live instance. Pure orchestration — UI updates flow through IOrchestratorHost.
+/// a live instance. Pure orchestration - UI updates flow through IOrchestratorHost.
 /// </summary>
 public class ChangeModelOrchestrator
 {
@@ -41,8 +41,8 @@ public class ChangeModelOrchestrator
             bool multimodal = category == SmokeClassifier.Category.MultimodalIncompatible;
             if (multimodal) _host.AddMultimodalIncompatible(id);
             _host.SetInstanceExtraStatus(id, multimodal
-                ? "MULTIMODAL INCOMPATIBLE — pick a text-only model via Change Model."
-                : "SMOKE TEST FAILED — try a different model.");
+                ? "MULTIMODAL INCOMPATIBLE - pick a text-only model via Change Model."
+                : "SMOKE TEST FAILED - try a different model.");
             _host.SetStatus("Switch finished but smoke test failed.");
             _host.ShowIncompatibleModelPopup(newModel, multimodal);
             _host.SetProgress(100);
@@ -53,7 +53,7 @@ public class ChangeModelOrchestrator
         await ReportCapabilitiesAsync(ollama, newModel, ct);
 
         _host.SetStatus("Model switched. Click 'Use' to wire opencode to this instance.");
-        _host.SetInstanceExtraStatus(id, "READY — click 'Use' to wire up opencode.");
+        _host.SetInstanceExtraStatus(id, "READY - click 'Use' to wire up opencode.");
         _host.SetProgress(100);
     }
 
@@ -104,7 +104,7 @@ public class ChangeModelOrchestrator
         try { await ollama.PullModelAsync(newModel.OllamaTag, progress, ct); }
         catch (Exception ex) when (ex.Message.Contains("no space left", StringComparison.OrdinalIgnoreCase))
         {
-            _host.AppendLog("  ⚠ DISK FULL — pull aborted.");
+            _host.AppendLog("  ⚠ DISK FULL - pull aborted.");
             _host.AppendLog($"  Recover: SSH in and run  rm -rf /root/.ollama/models/blobs/*-partial*");
             _host.AppendLog($"  Or: Destroy {id} and rent a new instance with more disk space.");
             _host.SetInstanceExtraStatus(id, "CHANGE FAILED: disk full.");
@@ -112,7 +112,7 @@ public class ChangeModelOrchestrator
         }
         catch (Exception ex) when (ex.Message.Contains("sharded GGUF", StringComparison.OrdinalIgnoreCase))
         {
-            _host.AppendLog("  ⚠ SHARDED GGUF — Ollama 0.30 can't pull these via hf.co/ (ollama/ollama#5245).");
+            _host.AppendLog("  ⚠ SHARDED GGUF - Ollama 0.30 can't pull these via hf.co/ (ollama/ollama#5245).");
             _host.AppendLog($"  Edit '{newModel.Key}' to a non-sharded quant, or pick a curated ollama.com tag.");
             _host.SetInstanceExtraStatus(id, "PULL FAILED: sharded GGUF.");
             throw;
@@ -125,6 +125,6 @@ public class ChangeModelOrchestrator
         if (caps.Count == 0) return;
         _host.AppendLog($"Model capabilities: {string.Join(", ", caps)}");
         if (!caps.Contains("tools", StringComparer.OrdinalIgnoreCase))
-            _host.AppendLog("  ⚠ No 'tools' capability — OpenCode tool-calling won't work.");
+            _host.AppendLog("  ⚠ No 'tools' capability - OpenCode tool-calling won't work.");
     }
 }

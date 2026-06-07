@@ -23,7 +23,7 @@ public class ModelRegistry
         var raw = AtomicJson.Read<Dictionary<string, ModelEntry>>(
             FilePath,
             ReadOpts,
-            (p, ex) => AppLog.Warn($"Failed to read models file '{p}' — returning empty registry.", ex));
+            (p, ex) => AppLog.Warn($"Failed to read models file '{p}' - returning empty registry.", ex));
         if (raw == null) return new();
         foreach (var kv in raw) kv.Value.Key = kv.Key;
         return raw;
@@ -37,7 +37,7 @@ public class ModelRegistry
             FilePath,
             models,
             WriteOpts,
-            (p, ex) => AppLog.Error($"Failed to write models file '{p}' — model edits not persisted.", ex));
+            (p, ex) => AppLog.Error($"Failed to write models file '{p}' - model edits not persisted.", ex));
     }
 
     /// <summary>Writes the same default model set the PowerShell script seeds.</summary>

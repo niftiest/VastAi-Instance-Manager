@@ -30,7 +30,7 @@ public static class GgufHelpers
         if (files.Count == 0) return null;
 
         var aggregated = AggregateShards(files);
-        // Exclude tiny GGUFs (< 0.5 GB) — those are imatrix calibration files / metadata, not model weights.
+        // Exclude tiny GGUFs (< 0.5 GB) - those are imatrix calibration files / metadata, not model weights.
         var modelsOnly = aggregated.Where(f => f.sizeBytes >= 500_000_000).ToList();
         if (modelsOnly.Count == 0) modelsOnly = aggregated;   // fall back if everything is small
 
@@ -41,7 +41,7 @@ public static class GgufHelpers
             if (match.filename != null) return (match.filename, match.sizeBytes, quant.ToUpperInvariant(), false);
         }
 
-        // Pass 2: sharded preferred quants (won't work via hf.co/ — caller must check isSharded)
+        // Pass 2: sharded preferred quants (won't work via hf.co/ - caller must check isSharded)
         foreach (var quant in PreferredQuants)
         {
             var match = modelsOnly.FirstOrDefault(f => f.isSharded && f.filename.ToLowerInvariant().Contains(quant));
@@ -88,11 +88,11 @@ public static class GgufHelpers
         return result;
     }
 
-    /// <summary>"{size} {quant}" e.g. "13.2 GB Q4_K_M", or "—" if no GGUF found. Flags sharded picks with ⚠.</summary>
+    /// <summary>"{size} {quant}" e.g. "13.2 GB Q4_K_M", or "-" if no GGUF found. Flags sharded picks with ⚠.</summary>
     public static string FormatRecommendedSize(List<(string filename, long sizeBytes)> files)
     {
         var pick = PickRepresentativeFile(files);
-        if (pick == null) return "—";
+        if (pick == null) return "-";
         const double gib = 1_073_741_824.0;
         var basePart = string.IsNullOrEmpty(pick.Value.quantLabel)
             ? $"{pick.Value.sizeBytes / gib:F1} GB"

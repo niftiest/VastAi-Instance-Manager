@@ -19,7 +19,7 @@ repeat rentals are faster and you remember which hosts behaved badly.
 - **Categorize smoke failures** so you know whether the host is broken (different offer needed),
   the model is incompatible (different model needed), or only multimodal projection failed
   (text-only models will still work on this host).
-- **Change Model** on a running instance without rebuilding it — unloads → deletes → pulls new →
+- **Change Model** on a running instance without rebuilding it - unloads → deletes → pulls new →
   smoke-tests. Multimodal-incompatible hosts hide multimodal models from the picker.
 - **Persist history** across runs: favorites, per-host boot stats (`✓` warm / `✗` known-slow / blank
   unknown in the offers Cached column), free-form notes per machine, and the most recent
@@ -76,11 +76,11 @@ dotnet test VastSpinup.sln
 
 The test project covers the pure decision logic that's load-bearing for correctness:
 
-- `SmokeClassifier` — categorizes llama-server stderr into BrokenHost / BrokenModel /
+- `SmokeClassifier` - categorizes llama-server stderr into BrokenHost / BrokenModel /
   MultimodalIncompatible / Unknown / Ok.
-- `OfferRanking` — best price / fastest / best value with the `t/s² ÷ $/hr` formula.
-- `ModalityHelper` — HF `pipeline_tag`/`tags` + Ollama capabilities → modality label.
-- `GgufHelpers` — quant preference, shard aggregation, imatrix-file filtering.
+- `OfferRanking` - best price / fastest / best value with the `t/s² ÷ $/hr` formula.
+- `ModalityHelper` - HF `pipeline_tag`/`tags` + Ollama capabilities → modality label.
+- `GgufHelpers` - quant preference, shard aggregation, imatrix-file filtering.
 
 49 tests, ~20 ms total.
 

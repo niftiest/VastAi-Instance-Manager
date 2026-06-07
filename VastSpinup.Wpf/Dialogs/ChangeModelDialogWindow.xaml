@@ -1,7 +1,7 @@
 <Window x:Class="VastSpinup.Wpf.Dialogs.ChangeModelDialogWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Change Model — VastSpinup"
+        Title="Change Model - VastSpinup"
         Width="620" Height="360"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"

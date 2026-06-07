@@ -12,7 +12,7 @@
 *.coverage
 *.coveragexml
 
-## Editors (VS Code workspace state; some keep this — ignore by default)
+## Editors (VS Code workspace state; some keep this - ignore by default)
 .vscode/
 
 ## Visual Studio
@@ -41,12 +41,12 @@ Thumbs.db
 .DS_Store
 desktop.ini
 
-## Secrets — never commit
+## Secrets - never commit
 *.pfx
 *.snk
 secrets.json
 appsettings.local.json
 
-## codemoot (multi-model orchestration tool) — personal config, ignore both the DB and the config
+## codemoot (multi-model orchestration tool) - personal config, ignore both the DB and the config
 .cowork/
 .cowork.yml

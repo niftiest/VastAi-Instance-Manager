@@ -15,7 +15,7 @@ indent_size = 2
 trim_trailing_whitespace = false
 
 [*.cs]
-# File-scoped namespaces and modern C# style — match what's already in the codebase.
+# File-scoped namespaces and modern C# style - match what's already in the codebase.
 csharp_style_namespace_declarations = file_scoped:warning
 csharp_style_var_for_built_in_types = true:none
 csharp_style_var_when_type_is_apparent = true:none

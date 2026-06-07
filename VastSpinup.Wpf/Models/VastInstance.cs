@@ -33,7 +33,7 @@ public class VastInstance
     }
     public int DiskGb => (int)DiskSpaceGb;
 
-    public string GpuDisplay => string.IsNullOrEmpty(GpuName) ? "—" : (NumGpus > 0 ? $"{NumGpus}x {GpuName}" : GpuName);
+    public string GpuDisplay => string.IsNullOrEmpty(GpuName) ? "-" : (NumGpus > 0 ? $"{NumGpus}x {GpuName}" : GpuName);
 
     public TimeSpan? Uptime
     {
@@ -61,7 +61,7 @@ public class VastInstance
         get
         {
             var up = Uptime;
-            if (up == null) return "—";
+            if (up == null) return "-";
             if (up.Value.TotalDays >= 1) return $"{(int)up.Value.TotalDays}d {up.Value.Hours}h {up.Value.Minutes}m";
             if (up.Value.TotalHours >= 1) return $"{(int)up.Value.TotalHours}h {up.Value.Minutes}m {up.Value.Seconds}s";
             if (up.Value.TotalMinutes >= 1) return $"{(int)up.Value.TotalMinutes}m {up.Value.Seconds}s";
@@ -69,7 +69,7 @@ public class VastInstance
         }
     }
 
-    public string SpentDisplay => SpentDollars.HasValue ? $"${SpentDollars.Value:F3}" : "—";
+    public string SpentDisplay => SpentDollars.HasValue ? $"${SpentDollars.Value:F3}" : "-";
 
     // 'ports' is Docker-style mapping dict like {"11434/tcp": [{"HostIp": "0.0.0.0", "HostPort": "17626"}]}
     [JsonPropertyName("ports")] public System.Text.Json.JsonElement? PortsRaw { get; set; }

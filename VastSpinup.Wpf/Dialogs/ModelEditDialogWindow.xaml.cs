@@ -33,7 +33,7 @@ public partial class ModelEditDialogWindow : Window
             MinRelBox.Text = existing.MinReliability.ToString("F3", CultureInfo.InvariantCulture);
             NotesBox.Text = existing.Notes;
             _modality = existing.Modality;
-            Title = $"Edit Model — {existingKey}";
+            Title = $"Edit Model - {existingKey}";
         }
         else
         {

@@ -4,7 +4,7 @@ namespace VastSpinup.Services;
 
 /// <summary>
 /// Free-form per-host notes keyed by machine_id. Persists across spinups so a note left on
-/// an instance ("this one took 3 min to boot — bad cache") shows up in the offers list next
+/// an instance ("this one took 3 min to boot - bad cache") shows up in the offers list next
 /// time that host appears.
 /// </summary>
 public class NotesService

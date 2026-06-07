@@ -39,7 +39,7 @@ public class ReadmeOverrides
 /// </summary>
 public static class ModelDefaults
 {
-    // Standard GPU VRAM sizes that vast.ai offers list — round VramGb up to the next one.
+    // Standard GPU VRAM sizes that vast.ai offers list - round VramGb up to the next one.
     private static readonly int[] StandardVramGb = { 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96, 128 };
 
     public static ModelEntry Suggest(string hfId, string ollamaTag, double ggufSizeGb)
@@ -54,12 +54,12 @@ public static class ModelDefaults
         // so we set it to the raw GGUF size + 1 GB for KV/activation headroom.
         entry.ModelSizeGb = Math.Round(ggufSizeGb + 1.0, 1);
 
-        // Per-card VRAM minimum for the API search filter — round model size up to the next
+        // Per-card VRAM minimum for the API search filter - round model size up to the next
         // standard GPU size so a single-GPU offer is viable. Multi-GPU still works via total-VRAM fit check.
         entry.VramGb = RoundUpToStandardVram(entry.ModelSizeGb * 1.15);
 
         // Disk provisioning. Need: container (~5 GB) + system + model file + room for one extra model
-        // (for Change Model swap). Formula: ceil(size * 1.8) + 5 — fits the pattern of the curated defaults.
+        // (for Change Model swap). Formula: ceil(size * 1.8) + 5 - fits the pattern of the curated defaults.
         entry.DiskGb = (int)Math.Ceiling(ggufSizeGb * 1.8) + 5;
 
         // Behavioral defaults inferred from model class.
@@ -78,7 +78,7 @@ public static class ModelDefaults
     {
         foreach (var s in StandardVramGb)
             if (s >= gbNeeded) return s;
-        return StandardVramGb[^1]; // 128 GB max — anything above gets capped
+        return StandardVramGb[^1]; // 128 GB max - anything above gets capped
     }
 
     private static string DeriveName(string hfId)
@@ -162,7 +162,7 @@ public static class ModelDefaults
     }
 
     /// <summary>
-    /// Parses Ollama's registry params blob — authoritative, machine-readable, and curator-vetted.
+    /// Parses Ollama's registry params blob - authoritative, machine-readable, and curator-vetted.
     /// Schema (varies per model): {"temperature":0.6,"top_p":0.95,"top_k":40,"repeat_penalty":1,
     /// "stop":["..."],"num_ctx":32768,"num_predict":-1,"min_p":0.0}
     /// Should be preferred over README parsing when available.
@@ -227,7 +227,7 @@ public static class ModelDefaults
         }
         if (start < 0) return null;
 
-        // Section ends at the next markdown heading of equal or higher level (we don't dedent — just stop on next #).
+        // Section ends at the next markdown heading of equal or higher level (we don't dedent - just stop on next #).
         int end = lines.Length;
         for (int i = start + 1; i < lines.Length; i++)
         {

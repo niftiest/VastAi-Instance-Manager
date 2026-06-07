@@ -48,7 +48,7 @@ public class AsyncRelayCommand : ICommand
         _running = true;
         CommandManager.InvalidateRequerySuggested();
         try { await _execute(); }
-        catch (OperationCanceledException) { /* user cancelled — not an error */ }
+        catch (OperationCanceledException) { /* user cancelled - not an error */ }
         catch (Exception ex)
         {
             // async void crash surface: log + show, but don't tear down the app.

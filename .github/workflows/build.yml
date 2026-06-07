@@ -2,7 +2,7 @@ name: build
 
 # Runs on every push and PR to main. The .NET 8 WPF app is windows-only, so the matrix is
 # a single windows-latest runner. Tests cover the pure decision logic (smoke classifier,
-# offer ranking, modality, GGUF picker, Ollama HTML parser) — small + fast (~20 ms).
+# offer ranking, modality, GGUF picker, Ollama HTML parser) - small + fast (~20 ms).
 #
 # A signed/unsigned single-file Windows binary is published on every push (artifact, 14d retention)
 # and additionally attached to a GitHub Release when a tag matching v* is pushed.

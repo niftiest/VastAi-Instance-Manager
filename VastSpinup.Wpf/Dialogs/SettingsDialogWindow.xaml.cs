@@ -15,7 +15,7 @@ public partial class SettingsDialogWindow : Window
     }
 
     /// <summary>"Show" toggle: flip visibility between PasswordBox and TextBox, mirroring the
-    /// current value across so the user keeps what they typed. No Grid.Children manipulation —
+    /// current value across so the user keeps what they typed. No Grid.Children manipulation -
     /// both controls live in the XAML at the same cell, one is Collapsed at any time.</summary>
     private void ShowKeyBox_Toggled(object sender, RoutedEventArgs e)
     {
@@ -52,7 +52,7 @@ public partial class SettingsDialogWindow : Window
             var u = await api.GetCurrentUserAsync();
             var email = u.TryGetProperty("email", out var em) ? em.GetString() : "?";
             var credit = u.TryGetProperty("credit", out var cr) ? cr.GetDouble() : 0;
-            StatusText.Text = $"OK — {email} (credit ${credit:F2})";
+            StatusText.Text = $"OK - {email} (credit ${credit:F2})";
             StatusText.Foreground = (Brush)FindResource("AccentSuccess");
         }
         catch (Exception ex)

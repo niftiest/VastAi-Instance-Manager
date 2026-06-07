@@ -124,7 +124,7 @@ public class OllamaApi
 
     /// <summary>
     /// Searches Ollama's curated library via their public search page (HTMX endpoint).
-    /// Returns the set of model names matching the query — optionally filtered by capability
+    /// Returns the set of model names matching the query - optionally filtered by capability
     /// (e.g. "tools", "vision", "thinking"). Names returned are bare repo names like "qwen3-coder".
     /// </summary>
     public static async Task<HashSet<string>> SearchLibraryAsync(string query, string? capabilityFilter = null, CancellationToken ct = default)
@@ -159,7 +159,7 @@ public class OllamaApi
     /// <summary>
     /// Richer Ollama-library search: returns per-result name, description, capabilities, and
     /// available sizes by scraping the search page's HTML. Each result's name IS the exact tag
-    /// you'd pass to `ollama pull` — no heuristic mapping needed (unlike the HF→Ollama flow).
+    /// you'd pass to `ollama pull` - no heuristic mapping needed (unlike the HF→Ollama flow).
     /// </summary>
     public static async Task<List<OllamaSearchResult>> SearchModelsAsync(string query, CancellationToken ct = default)
     {
@@ -203,7 +203,7 @@ public class OllamaApi
     /// <summary>
     /// Calls /api/show to get the model's capabilities (e.g. ["completion", "tools", "vision"]).
     /// Returns an empty list on failure. OpenCode refuses tool-calling tasks if "tools" isn't in
-    /// this list — so we use this to warn the user post-pull, before they discover it mid-chat.
+    /// this list - so we use this to warn the user post-pull, before they discover it mid-chat.
     /// </summary>
     public async Task<List<string>> GetModelCapabilitiesAsync(string tag, CancellationToken ct = default)
     {
@@ -260,20 +260,20 @@ public class OllamaApi
                 options = new { num_predict = 1 }
             });
             using var req = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/api/generate") { Content = body };
-            // Generous timeout — first inference includes model load into VRAM.
+            // Generous timeout - first inference includes model load into VRAM.
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             cts.CancelAfter(TimeSpan.FromMinutes(3));
             using var resp = await _http.SendAsync(req, cts.Token);
             var content = await resp.Content.ReadAsStringAsync(cts.Token);
             if (!resp.IsSuccessStatusCode) return $"HTTP {(int)resp.StatusCode}: {content}";
-            // Ollama returns 200 even on llama-server crashes — error is in body.
+            // Ollama returns 200 even on llama-server crashes - error is in body.
             try
             {
                 var doc = JsonSerializer.Deserialize<JsonElement>(content);
                 if (doc.TryGetProperty("error", out var err))
                     return err.GetString() ?? "unknown error";
             }
-            catch { /* not JSON — treat as raw error if no 'response' */ }
+            catch { /* not JSON - treat as raw error if no 'response' */ }
             return null;
         }
         catch (OperationCanceledException) when (!ct.IsCancellationRequested)

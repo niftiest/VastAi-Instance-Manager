@@ -60,7 +60,7 @@ public class HuggingFaceApi
         catch { return new(); }
     }
 
-    /// <summary>Top public HF models by likes, no search query — used to pre-populate the search
+    /// <summary>Top public HF models by likes, no search query - used to pre-populate the search
     /// dialog so users land on something useful instead of a blank list.</summary>
     public async Task<List<HuggingFaceModel>> GetPopularAsync(bool ggufOnly = true, int limit = 100, CancellationToken ct = default)
     {
@@ -115,7 +115,7 @@ public class HuggingFaceApi
                 }
             }
         }
-        catch { /* silent — caller shows "—" */ }
+        catch { /* silent - caller shows "-" */ }
         return files;
     }
 
@@ -132,7 +132,7 @@ public class HuggingFaceApi
         catch { return null; }
     }
 
-    /// <summary>Fetches the raw tokenizer_config.json — its chat_template field can be scanned for
+    /// <summary>Fetches the raw tokenizer_config.json - its chat_template field can be scanned for
     /// tool-calling support before pulling the model.</summary>
     public async Task<string?> GetTokenizerConfigAsync(string id, CancellationToken ct = default)
     {
@@ -152,7 +152,7 @@ public class HuggingFaceApi
         [JsonPropertyName("size")] public long Size { get; set; }
     }
 
-    /// <summary>Heuristic: derive a likely Ollama tag from an HF model id. Often wrong — user must verify.
+    /// <summary>Heuristic: derive a likely Ollama tag from an HF model id. Often wrong - user must verify.
     /// Pattern observed: HF "huihui-ai/Qwen2.5-Coder-32B-Instruct-abliterated" ≈ Ollama "huihui_ai/qwen2.5-coder-abliterate:32b".
     /// We can't reliably guess the size suffix, so we just convert org dashes to underscores and lowercase the repo.</summary>
     public static string SuggestOllamaTag(string hfId)
@@ -167,7 +167,7 @@ public class HuggingFaceApi
     /// <summary>
     /// Constructs Ollama's direct-from-HuggingFace pull tag. Ollama 0.3+ supports pulling GGUF files
     /// straight from any HF repo via the hf.co/ prefix, bypassing the curated Ollama registry.
-    /// Format: "hf.co/{user}/{repo}:{quant}" — e.g. "hf.co/bartowski/Qwen2.5-Coder-32B-Instruct-GGUF:Q4_K_M".
+    /// Format: "hf.co/{user}/{repo}:{quant}" - e.g. "hf.co/bartowski/Qwen2.5-Coder-32B-Instruct-GGUF:Q4_K_M".
     /// Pass quantLabel="" to omit the quant tag (Ollama picks default, usually Q4_K_M).
     /// </summary>
     public static string BuildHfDirectTag(string hfId, string quantLabel)

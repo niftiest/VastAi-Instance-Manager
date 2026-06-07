@@ -339,7 +339,7 @@
         </Setter>
     </Style>
 
-    <!-- ProgressBar — indigo accent fill -->
+    <!-- ProgressBar - indigo accent fill -->
     <Style TargetType="{x:Type ProgressBar}">
         <Setter Property="Background" Value="{StaticResource BackgroundLight}" />
         <Setter Property="Foreground" Value="{StaticResource AccentPrimary}" />
@@ -364,5 +364,5 @@
         <Setter Property="Padding" Value="0,3" />
     </Style>
 
-    <!-- ScrollBar — kept default to avoid a 300-line template. Default chrome is acceptable. -->
+    <!-- ScrollBar - kept default to avoid a 300-line template. Default chrome is acceptable. -->
 </ResourceDictionary>

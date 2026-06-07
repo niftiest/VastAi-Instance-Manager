@@ -18,7 +18,7 @@ public class InstanceRowVM : ObservableObject
 
     public long Id => Instance.Id;
     public string Gpu => Instance.GpuDisplay;
-    public string Status => Instance.ActualStatus ?? "—";
+    public string Status => Instance.ActualStatus ?? "-";
     public string Price => $"${Instance.DphTotal:F3}";
     public string Endpoint
     {
@@ -27,16 +27,16 @@ public class InstanceRowVM : ObservableObject
             var port = Instance.GetExternalPortFor(11434);
             return Instance.PublicIpAddr != null && port != null
                 ? $"http://{Instance.PublicIpAddr}:{port}"
-                : "—";
+                : "-";
         }
     }
-    public string Ip => Instance.PublicIpAddr ?? "—";
-    public string Ssh => string.IsNullOrEmpty(Instance.SshHost) ? "—" : $"{Instance.SshHost}:{Instance.SshPort}";
+    public string Ip => Instance.PublicIpAddr ?? "-";
+    public string Ssh => string.IsNullOrEmpty(Instance.SshHost) ? "-" : $"{Instance.SshHost}:{Instance.SshPort}";
 
-    private string _uptime = "—";
+    private string _uptime = "-";
     public string Uptime { get => _uptime; set => SetField(ref _uptime, value); }
 
-    private string _spent = "—";
+    private string _spent = "-";
     public string Spent { get => _spent; set => SetField(ref _spent, value); }
 
     private string? _extraStatus;

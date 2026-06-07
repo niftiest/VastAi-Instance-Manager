@@ -5,7 +5,7 @@ namespace VastSpinup.Tests;
 
 /// <summary>
 /// Regression tests for the brittle ollama.com HTML scraper. When ollama.com restyles their
-/// search page the parser breaks silently in production — these tests pin the expected markup
+/// search page the parser breaks silently in production - these tests pin the expected markup
 /// so the failure surfaces in CI instead. If a test fails after an ollama.com redesign,
 /// inspect the live page, update both the fixture and the regexes in OllamaLibraryParser.
 /// </summary>

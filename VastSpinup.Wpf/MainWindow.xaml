@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:VastSpinup.Wpf.ViewModels"
         xmlns:conv="clr-namespace:VastSpinup.Wpf.Converters"
-        Title="VastSpinup — vast.ai Ollama provisioning"
+        Title="VastSpinup - vast.ai Ollama provisioning"
         Width="1280" Height="860" MinWidth="1000" MinHeight="750"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BackgroundDark}"

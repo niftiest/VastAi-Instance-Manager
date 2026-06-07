@@ -5,7 +5,7 @@ namespace VastSpinup.Wpf.Orchestration;
 
 /// <summary>
 /// Drives a single rent → boot → SSH → Ollama → pull → smoke → ready flow.
-/// Pure orchestration logic — no WPF types, no observable collections, no commands.
+/// Pure orchestration logic - no WPF types, no observable collections, no commands.
 /// All UI updates flow through the IOrchestratorHost.
 /// </summary>
 public class RentOrchestrator
@@ -66,7 +66,7 @@ public class RentOrchestrator
             await ReportCapabilitiesAsync(ollama, model, ct);
 
             _host.SetStatus("READY. Click 'Use' on the instance to wire up opencode.");
-            _host.SetInstanceExtraStatus(instanceId, "READY — click 'Use' to wire up opencode.");
+            _host.SetInstanceExtraStatus(instanceId, "READY - click 'Use' to wire up opencode.");
             _host.AppendLog($"=== READY ===  Endpoint: {ollamaUrl}");
             _host.SetProgress(100);
         }
@@ -137,7 +137,7 @@ public class RentOrchestrator
         try { await ollama.PullModelAsync(model.OllamaTag, progress, ct); }
         catch (Exception ex) when (ex.Message.Contains("sharded GGUF", StringComparison.OrdinalIgnoreCase))
         {
-            _host.AppendLog("  ⚠ SHARDED GGUF — Ollama 0.30 can't pull these via hf.co/ (ollama/ollama#5245).");
+            _host.AppendLog("  ⚠ SHARDED GGUF - Ollama 0.30 can't pull these via hf.co/ (ollama/ollama#5245).");
             _host.AppendLog($"  Edit the '{model.Key}' entry to a single-file quant, or pick a curated ollama.com tag.");
             _host.SetInstanceExtraStatus(instanceId, "PULL FAILED: sharded GGUF.");
             throw;
@@ -149,7 +149,7 @@ public class RentOrchestrator
     {
         if (category == SmokeClassifier.Category.Ok)
         {
-            _host.AppendLog("Smoke test OK — model loaded into VRAM successfully.");
+            _host.AppendLog("Smoke test OK - model loaded into VRAM successfully.");
             return false;
         }
         _host.AppendLog($"  ⚠ Smoke test FAILED: {smokeErr}");
@@ -158,8 +158,8 @@ public class RentOrchestrator
             _host.AddDeadOffer(offerId);
             _host.AppendLog($"  This host's CUDA/driver setup is broken. Offer {offerId} blacklisted for this session.");
             _host.AppendLog($"  Destroy {instanceId} and pick a different offer.");
-            _host.SetInstanceExtraStatus(instanceId, "BROKEN HOST — destroy and retry on a different offer.");
-            _host.SetStatus("Host has broken CUDA — destroy and try another.");
+            _host.SetInstanceExtraStatus(instanceId, "BROKEN HOST - destroy and retry on a different offer.");
+            _host.SetStatus("Host has broken CUDA - destroy and try another.");
             _host.SetProgress(100);
             return true;
         }
@@ -168,18 +168,18 @@ public class RentOrchestrator
             bool multimodal = category == SmokeClassifier.Category.MultimodalIncompatible;
             if (multimodal) _host.AddMultimodalIncompatible(instanceId);
             _host.AppendLog(multimodal
-                ? "  MULTIMODAL incompatible on this provider — the vision/audio projector can't load on its Ollama version."
-                : "  MODEL/runtime mismatch — host is fine, this model+ollama combo isn't.");
+                ? "  MULTIMODAL incompatible on this provider - the vision/audio projector can't load on its Ollama version."
+                : "  MODEL/runtime mismatch - host is fine, this model+ollama combo isn't.");
             _host.AppendLog("  Use Change Model on this instance to pick a different one.");
             _host.SetInstanceExtraStatus(instanceId, multimodal
-                ? "MULTIMODAL INCOMPATIBLE — use Change Model (text-only models will load)."
-                : "MODEL INCOMPATIBLE — use Change Model.");
+                ? "MULTIMODAL INCOMPATIBLE - use Change Model (text-only models will load)."
+                : "MODEL INCOMPATIBLE - use Change Model.");
             _host.SetStatus("Model incompatible. Host is fine.");
             _host.SetProgress(100);
             _host.ShowIncompatibleModelPopup(model, multimodal);
             return true;
         }
-        _host.AppendLog("  (Unknown error category — continuing setup.)");
+        _host.AppendLog("  (Unknown error category - continuing setup.)");
         return false;
     }
 
@@ -190,7 +190,7 @@ public class RentOrchestrator
         _host.AppendLog($"Model capabilities: {string.Join(", ", capabilities)}");
         if (!capabilities.Contains("tools", StringComparer.OrdinalIgnoreCase))
         {
-            _host.AppendLog("  ⚠ No 'tools' capability — OpenCode CAN'T use this model for file edits / tool calls.");
+            _host.AppendLog("  ⚠ No 'tools' capability - OpenCode CAN'T use this model for file edits / tool calls.");
             _host.AppendLog("  Works for plain chat, but agent-style workflows will fail with 'does not support tools'.");
         }
     }
@@ -202,7 +202,7 @@ public class RentOrchestrator
         var lastChange = start;
         const int hardTimeoutSec = 900;
         const int sameMsgCapSec = 300;
-        const double expectedBootSec = 90.0;  // typical vast.ai boot — eases progress smoothly toward 28 while waiting
+        const double expectedBootSec = 90.0;  // typical vast.ai boot - eases progress smoothly toward 28 while waiting
         while ((DateTime.UtcNow - start).TotalSeconds < hardTimeoutSec)
         {
             ct.ThrowIfCancellationRequested();

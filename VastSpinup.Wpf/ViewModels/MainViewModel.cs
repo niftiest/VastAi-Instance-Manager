@@ -88,7 +88,7 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
     private string _status = "Idle.";
     public string Status { get => _status; set => SetField(ref _status, value); }
 
-    private string _balance = "Balance: —";
+    private string _balance = "Balance: -";
     public string Balance { get => _balance; set => SetField(ref _balance, value); }
 
     private readonly StringBuilder _logBuilder = new();
@@ -101,11 +101,11 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
     private bool _progressVisible;
     public bool ProgressVisible { get => _progressVisible; set => SetField(ref _progressVisible, value); }
 
-    private string _bestPriceText = "BEST PRICE: —";
+    private string _bestPriceText = "BEST PRICE: -";
     public string BestPriceText { get => _bestPriceText; set => SetField(ref _bestPriceText, value); }
-    private string _fastestText = "FASTEST: —";
+    private string _fastestText = "FASTEST: -";
     public string FastestText { get => _fastestText; set => SetField(ref _fastestText, value); }
-    private string _bestValueText = "BEST VALUE: —";
+    private string _bestValueText = "BEST VALUE: -";
     public string BestValueText { get => _bestValueText; set => SetField(ref _bestValueText, value); }
 
     public VastOffer? BestPriceOffer { get; private set; }
@@ -235,7 +235,7 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
         }
         catch (Exception ex)
         {
-            Status = "Auth check FAILED — Settings → check key";
+            Status = "Auth check FAILED - Settings → check key";
             Balance = "Balance: ?";
             AppendLog("Auth error: " + ex.Message);
         }
@@ -324,20 +324,20 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
         BestPriceOffer = picks.BestPrice;
         FastestOffer = picks.Fastest;
         BestValueOffer = picks.BestValue;
-        BestPriceText = picks.BestPrice == null ? "BEST PRICE: —" : $"BEST PRICE: {Fmt(picks.BestPrice, model)}";
-        FastestText   = picks.Fastest   == null ? "FASTEST: —"    : $"FASTEST: {Fmt(picks.Fastest, model)}";
-        BestValueText = picks.BestValue == null ? "BEST VALUE: —" : $"BEST VALUE: {Fmt(picks.BestValue, model)}";
+        BestPriceText = picks.BestPrice == null ? "BEST PRICE: -" : $"BEST PRICE: {Fmt(picks.BestPrice, model)}";
+        FastestText   = picks.Fastest   == null ? "FASTEST: -"    : $"FASTEST: {Fmt(picks.Fastest, model)}";
+        BestValueText = picks.BestValue == null ? "BEST VALUE: -" : $"BEST VALUE: {Fmt(picks.BestValue, model)}";
 
         static string Fmt(VastOffer o, ModelEntry m)
-            => $"{o.NumGpus}x {o.GpuName} — ${o.DphTotal:F3}/hr — {o.EstimateTokensPerSec(m.ModelSizeGb)} t/s";
+            => $"{o.NumGpus}x {o.GpuName} - ${o.DphTotal:F3}/hr - {o.EstimateTokensPerSec(m.ModelSizeGb)} t/s";
     }
 
     private void ResetPicks()
     {
         BestPriceOffer = FastestOffer = BestValueOffer = null;
-        BestPriceText = "BEST PRICE: —";
-        FastestText = "FASTEST: —";
-        BestValueText = "BEST VALUE: —";
+        BestPriceText = "BEST PRICE: -";
+        FastestText = "FASTEST: -";
+        BestValueText = "BEST VALUE: -";
     }
 
     private void SelectOffer(VastOffer? offer)
@@ -418,7 +418,7 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
     {
         if (machineId == 0)
         {
-            MessageBox.Show("This row has no machine_id from vast.ai — can't attach notes.");
+            MessageBox.Show("This row has no machine_id from vast.ai - can't attach notes.");
             return;
         }
         var existing = _notes.Get(machineId);
@@ -576,7 +576,7 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
             (diskAvail <= 0 || diskAvail >= m.DiskGb)).ToList();
         var skipped = allModels.Except(fits).ToList();
 
-        // If this instance has already failed a multimodal smoke test, hide multimodal models —
+        // If this instance has already failed a multimodal smoke test, hide multimodal models -
         // those just waste time and disk pulling them only to fail at load again.
         if (multimodalBanned)
         {
@@ -585,7 +585,7 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
             {
                 fits = fits.Except(hiddenForModality).ToList();
                 skipped.AddRange(hiddenForModality);
-                AppendLog($"Change Model: hid {hiddenForModality.Count} multimodal model(s) — this instance has shown it can't load them.");
+                AppendLog($"Change Model: hid {hiddenForModality.Count} multimodal model(s) - this instance has shown it can't load them.");
             }
         }
 
@@ -639,7 +639,7 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
 
     // --- IOrchestratorHost implementation (orchestrators read services + push UI updates here) ---
 
-    VastApi IOrchestratorHost.Api => _api ?? throw new InvalidOperationException("No API client — not connected.");
+    VastApi IOrchestratorHost.Api => _api ?? throw new InvalidOperationException("No API client - not connected.");
     HostStatsService IOrchestratorHost.HostStats => _hostStats;
     TemplateHashService IOrchestratorHost.TemplateHash => _templateHash;
     void IOrchestratorHost.SetStatus(string status) => Status = status;
@@ -659,9 +659,9 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
         string title = multimodalFailure ? "Multimodal model can't load here" : "Model incompatible with this provider";
         string body = multimodalFailure
             ? $"The smoke test for '{model.Key}' failed because this provider's Ollama runtime can't load the model's vision/audio projector.\n\n" +
-              "The HOST itself is fine — text-only models will load.\n\n" +
+              "The HOST itself is fine - text-only models will load.\n\n" +
               "Use Change Model on this instance to pick a text-only model. Multimodal models will be hidden from the picker for this instance."
-            : $"The smoke test for '{model.Key}' failed — this model isn't compatible with the Ollama runtime on this provider.\n\n" +
+            : $"The smoke test for '{model.Key}' failed - this model isn't compatible with the Ollama runtime on this provider.\n\n" +
               "The HOST itself is fine. Use Change Model to pick a different model.";
         MessageBox.Show(body, title, MessageBoxButton.OK, MessageBoxImage.Warning);
     }

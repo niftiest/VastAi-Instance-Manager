@@ -15,7 +15,7 @@ public class FavoritesService
     {
         var ids = AtomicJson.Read<List<long>>(
             AppPaths.FavoritesFile,
-            onError: (p, ex) => AppLog.Warn($"Failed to read favorites file '{p}' — starting with empty set.", ex));
+            onError: (p, ex) => AppLog.Warn($"Failed to read favorites file '{p}' - starting with empty set.", ex));
         if (ids != null) _favs = new HashSet<long>(ids);
     }
 

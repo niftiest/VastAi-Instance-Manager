@@ -77,7 +77,7 @@ public partial class HuggingFaceSearchDialogWindow : Window
                 Tag = m,
             });
         }
-        StatusText.Text = $"Top {_popularCache.Count} by likes — type to search.";
+        StatusText.Text = $"Top {_popularCache.Count} by likes - type to search.";
         _ = FetchSizesAsync(_popularCache, ct);
     }
 
@@ -266,12 +266,12 @@ public partial class HuggingFaceSearchDialogWindow : Window
                             $"Options: (a) edit the Ollama tag to a non-sharded smaller quant from this repo, " +
                             $"(b) find a curated Ollama tag at ollama.com/library, or " +
                             $"(c) pick a different model.");
-                        StatusText.Text = "⚠ Sharded GGUF — hf.co/ pull won't work. See Notes in next dialog.";
+                        StatusText.Text = "⚠ Sharded GGUF - hf.co/ pull won't work. See Notes in next dialog.";
                     }
                     else
                     {
                         candidate = HuggingFaceApi.BuildHfDirectTag(m.Id, pick.Value.quantLabel);
-                        StatusText.Text = $"Curated tag not on Ollama registry — using HF direct: {candidate}";
+                        StatusText.Text = $"Curated tag not on Ollama registry - using HF direct: {candidate}";
                     }
                 }
             }
@@ -342,7 +342,7 @@ public partial class HuggingFaceSearchDialogWindow : Window
             ? "Ollama capabilities: " + string.Join(", ", or.Capabilities)
             : "Ollama capabilities: (none listed)");
         if (!or.HasTools)
-            SelectedWarnings.Add("⚠ This Ollama model has no 'tools' capability — OpenCode tool-calling won't work.");
+            SelectedWarnings.Add("⚠ This Ollama model has no 'tools' capability - OpenCode tool-calling won't work.");
 
         DialogResult = true;
         Close();

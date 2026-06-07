@@ -12,7 +12,7 @@ namespace VastSpinup.Services;
 /// </summary>
 public static class OllamaLibraryParser
 {
-    // Each result has href="/library/{name}" — used by the lightweight name-only search
+    // Each result has href="/library/{name}" - used by the lightweight name-only search
     // (e.g. for cross-referencing HF rows with the "tools" capability filter).
     private static readonly Regex LibraryHref = new(
         @"href=""/library/([a-z0-9._\-]+)""",
@@ -52,7 +52,7 @@ public static class OllamaLibraryParser
     }
 
     /// <summary>Extracts full per-result records from search HTML.
-    /// Each result's Name is the exact pullable tag — no heuristic mapping needed.</summary>
+    /// Each result's Name is the exact pullable tag - no heuristic mapping needed.</summary>
     public static List<OllamaSearchResult> ParseSearchResults(string? html)
     {
         var results = new List<OllamaSearchResult>();

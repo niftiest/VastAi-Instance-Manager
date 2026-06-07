@@ -61,11 +61,11 @@ public class VastApi
         int limit = 50,
         CancellationToken ct = default)
     {
-        // NOTE: vast.ai's /bundles/ endpoint does NOT support filtering by template_hash_id —
+        // NOTE: vast.ai's /bundles/ endpoint does NOT support filtering by template_hash_id -
         // that field is only for instance CREATION, not offer search. Per their docs:
         //   https://docs.vast.ai/api-reference/creating-and-using-templates-with-api
         // For "is this host warm for our image?" we rely on local HostStats (machines we've
-        // successfully spun up on) — see MainForm.searchButton_Click's fallback path.
+        // successfully spun up on) - see MainForm.searchButton_Click's fallback path.
         var body = new Dictionary<string, object?>
         {
             ["verified"]   = new { eq = true },

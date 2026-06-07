@@ -70,7 +70,7 @@ public class GgufHelpersTests
         // They should not be picked even if they match a quant pattern.
         var files = new List<(string, long)>
         {
-            F("imatrix-q4_K_M.gguf", 0.05),    // 50 MB — calibration
+            F("imatrix-q4_K_M.gguf", 0.05),    // 50 MB - calibration
             F("model-q5_K_M.gguf", 14),        // real weight
         };
         var pick = GgufHelpers.PickRepresentativeFile(files);
@@ -109,6 +109,6 @@ public class GgufHelpersTests
     [Fact]
     public void FormatRecommendedSize_empty_is_dash()
     {
-        Assert.Equal("—", GgufHelpers.FormatRecommendedSize(new()));
+        Assert.Equal("-", GgufHelpers.FormatRecommendedSize(new()));
     }
 }

@@ -13,7 +13,7 @@ public static class GpuBlocklist
 {
     public static readonly IReadOnlyList<string> Default = new[]
     {
-        // Volta datacenter (sm_70) — confirmed broken with vastai/ollama:0.30.0
+        // Volta datacenter (sm_70) - confirmed broken with vastai/ollama:0.30.0
         "Tesla V100",
         "Titan V",
 
@@ -26,7 +26,7 @@ public static class GpuBlocklist
         "Tesla M40",
         "Tesla M60",
 
-        // Kepler datacenter (sm_35 / sm_37) — ancient
+        // Kepler datacenter (sm_35 / sm_37) - ancient
         "Tesla K80",
         "Tesla K40",
         "Tesla K20",
@@ -44,7 +44,7 @@ public static class GpuBlocklist
         "GTX 960",
         "GTX 950",
 
-        // Pascal Quadro (sm_61) — note: matches "Quadro P4000" etc. (Pascal)
+        // Pascal Quadro (sm_61) - note: matches "Quadro P4000" etc. (Pascal)
         // RTX A4000/A5000/A6000 are Ampere (sm_86) and are NOT matched.
         "Quadro P",
 

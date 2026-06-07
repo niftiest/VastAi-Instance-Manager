@@ -31,7 +31,7 @@ public static class AppLog
                 if (ex != null)
                 {
                     line += $"  {ex.GetType().Name}: {ex.Message}";
-                    // Trim long stack traces to one line of context — full trace is in ex.ToString().
+                    // Trim long stack traces to one line of context - full trace is in ex.ToString().
                     var st = ex.StackTrace;
                     if (!string.IsNullOrEmpty(st))
                     {
@@ -44,7 +44,7 @@ public static class AppLog
         }
         catch
         {
-            // Logging must never throw. If we can't write, there's nothing useful to do —
+            // Logging must never throw. If we can't write, there's nothing useful to do -
             // surfacing a dialog or popup here would just confuse the user.
         }
     }
