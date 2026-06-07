@@ -4,8 +4,9 @@ name: build
 # a single windows-latest runner. Tests cover the pure decision logic (smoke classifier,
 # offer ranking, modality, GGUF picker, Ollama HTML parser) - small + fast (~20 ms).
 #
-# A signed/unsigned single-file Windows binary is published on every push (artifact, 14d retention)
-# and additionally attached to a GitHub Release when a tag matching v* is pushed.
+# A framework-dependent Windows x64 binary is published on every push (artifact, 30d retention)
+# and additionally attached to a GitHub Release when a tag matching v* is pushed. End users need
+# the .NET 8 Desktop Runtime installed (https://aka.ms/dotnet/download).
 on:
   push:
     branches: [main]
@@ -57,18 +58,17 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      # Self-contained single-file Windows x64 binary. ~140 MB but no .NET install required by
-      # the end user. PublishReadyToRun=true bakes ahead-of-time compiled native code so cold-start
-      # is faster; IncludeNativeLibrariesForSelfExtract=true rolls the unmanaged libs into the .exe.
-      - name: Publish self-contained win-x64
+      # Framework-dependent Windows x64 publish. Tiny (~500 KB total) but requires the end user
+      # to have the .NET 8 Desktop Runtime installed (https://aka.ms/dotnet/download). The runtime
+      # is a one-time 50 MB install for the user, kept up to date by Windows Update; no per-app
+      # bundled runtime to grow stale. PublishSingleFile is deliberately off because for WPF it
+      # ends up bundling 150+ MB of managed deps even in framework-dependent mode.
+      - name: Publish framework-dependent win-x64
         run: >
           dotnet publish VastSpinup.Wpf/VastSpinup.Wpf.csproj
           --configuration Release
           --runtime win-x64
-          --self-contained true
-          -p:PublishSingleFile=true
-          -p:IncludeNativeLibrariesForSelfExtract=true
-          -p:PublishReadyToRun=true
+          --self-contained false
           --output publish/win-x64
 
       - name: Stamp the binary with the commit SHA

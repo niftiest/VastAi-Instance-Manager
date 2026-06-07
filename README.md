@@ -54,19 +54,18 @@ your balance in the status bar once auth succeeds.
 The app reads/writes only under `%USERPROFILE%\.config\vast-spinup\` plus the standard
 opencode config under `%USERPROFILE%\.config\opencode\`. Nothing else on disk.
 
-## Build a standalone binary
+## Build a binary
 
 ```powershell
-dotnet publish VastSpinup.Wpf -c Release -r win-x64 --self-contained true `
-    -p:PublishSingleFile=true `
-    -p:IncludeNativeLibrariesForSelfExtract=true `
-    -p:PublishReadyToRun=true `
-    --output publish/win-x64
+dotnet publish VastSpinup.Wpf -c Release -r win-x64 --self-contained false --output publish/win-x64
 ```
 
-Produces a single `VastSpinup.Wpf.exe` (~170 MB, includes the .NET 8 runtime) at
-`publish/win-x64/`. Same artifact that GitHub Actions builds on every push and attaches to
-GitHub Releases on `v*` tag pushes.
+Produces a small (~500 KB total) framework-dependent build at `publish/win-x64/` with
+`VastSpinup.Wpf.exe` plus a few WPF support DLLs. Requires the
+[.NET 8 Desktop Runtime](https://aka.ms/dotnet/download) on the user's machine.
+
+Same artifact that GitHub Actions builds on every push and attaches to GitHub Releases on
+`v*` tag pushes.
 
 ## Tests
 
