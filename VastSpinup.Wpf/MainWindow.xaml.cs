@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using VastSpinup.Services;
 using VastSpinup.Wpf.ViewModels;
 
 namespace VastSpinup.Wpf;
@@ -20,6 +21,8 @@ public partial class MainWindow : Window
             OffersGrid.ScrollIntoView(row);
             OffersGrid.Focus();
         };
+        RestoreWindowPlacement();
+        Closing += (_, _) => SaveWindowPlacement();
         Loaded += async (_, _) =>
         {
             try { await _vm.InitializeAsync(); }
@@ -31,6 +34,39 @@ public partial class MainWindow : Window
                     "VastSpinup", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         };
+    }
+
+    private void RestoreWindowPlacement()
+    {
+        var saved = WindowStateService.Load();
+        if (saved == null) return;
+        // Reject saved coords that don't overlap any current monitor (e.g. after a monitor disconnect).
+        // Fall through to the XAML CenterScreen default in that case.
+        if (!WindowStateService.IsOnScreen(saved.Left, saved.Top, saved.Width, saved.Height)) return;
+
+        WindowStartupLocation = WindowStartupLocation.Manual;
+        Left = saved.Left;
+        Top = saved.Top;
+        // Honour MinWidth/MinHeight set in the XAML.
+        Width  = Math.Max(saved.Width,  MinWidth);
+        Height = Math.Max(saved.Height, MinHeight);
+        if (saved.IsMaximized) WindowState = WindowState.Maximized;
+    }
+
+    private void SaveWindowPlacement()
+    {
+        // RestoreBounds is the non-maximized size; Left/Top/Width/Height in maximized mode
+        // would be the monitor's full size, which we don't want to save.
+        var bounds = WindowState == WindowState.Maximized ? RestoreBounds
+                   : new Rect(Left, Top, Width, Height);
+        WindowStateService.Save(new SavedWindowState
+        {
+            Left = bounds.Left,
+            Top = bounds.Top,
+            Width = bounds.Width,
+            Height = bounds.Height,
+            IsMaximized = WindowState == WindowState.Maximized,
+        });
     }
 
     private void BestPrice_Click(object sender, MouseButtonEventArgs e) => _vm.SelectBestPriceCommand.Execute(null);

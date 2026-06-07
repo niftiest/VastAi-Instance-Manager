@@ -14,6 +14,7 @@ public static class AppPaths
     public static string HostStatsFile => Path.Combine(VastConfigDir, "host-stats.json");
     public static string TemplateHashFile => Path.Combine(VastConfigDir, "ollama-template-hash.json");
     public static string LastInstanceFile => Path.Combine(VastConfigDir, "last-instance.json");
+    public static string WindowStateFile => Path.Combine(VastConfigDir, "window.json");
     public static string EphemeralKeysDir => Path.Combine(VastConfigDir, "ephemeral");
     public static string LogsDir       => Path.Combine(VastConfigDir, "logs");
     public static string AppLogFile    => Path.Combine(LogsDir, "app.log");

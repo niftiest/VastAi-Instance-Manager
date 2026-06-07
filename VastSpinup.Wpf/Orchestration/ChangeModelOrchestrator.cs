@@ -55,6 +55,9 @@ public class ChangeModelOrchestrator
         _host.SetStatus("Model switched. Click 'Use' to wire opencode to this instance.");
         _host.SetInstanceExtraStatus(id, "READY - click 'Use' to wire up opencode.");
         _host.SetProgress(100);
+        _host.NotifyInstanceReady(id,
+            "Model switched",
+            $"Instance {id} now has {newModel.OllamaTag} loaded.\n\nClick 'Use' to wire opencode to this instance.");
     }
 
     private async Task UnloadAndDeleteAsync(long id, OllamaApi ollama, List<string> installed, CancellationToken ct)

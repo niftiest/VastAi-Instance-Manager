@@ -22,6 +22,9 @@ public interface IOrchestratorHost
     void SetProgress(double progress);
     void SetInstanceExtraStatus(long instanceId, string? msg);
     void ShowIncompatibleModelPopup(ModelEntry model, bool multimodal);
+    /// <summary>Non-blocking "your instance just finished setup" notification: sound + message box
+    /// fired on the UI dispatcher so the orchestrator's await chain can complete cleanly.</summary>
+    void NotifyInstanceReady(long instanceId, string title, string body);
     Task RefreshInstancesAsync(bool silent);
 
     // ── Session-scoped flags that influence subsequent picks/filters ─────────

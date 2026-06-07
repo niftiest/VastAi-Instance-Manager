@@ -190,6 +190,36 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
         await CheckAuthAsync();
         await RefreshInstancesAsync(silent: true);
         _pollTimer.Start();
+
+        // Background update check - fire and forget. If a newer version exists, prompt the user.
+        // Never blocks startup; silent on any error (no network, rate-limited, etc.).
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(TimeSpan.FromSeconds(8));   // let the main UI settle first
+            var info = await UpdateChecker.CheckAsync();
+            if (info != null) ShowUpdateAvailable(info);
+        });
+    }
+
+    private void ShowUpdateAvailable(UpdateChecker.UpdateInfo info)
+    {
+        Application.Current?.Dispatcher.BeginInvoke(new Action(() =>
+        {
+            var result = MessageBox.Show(
+                Application.Current?.MainWindow,
+                $"A newer version of VastSpinup is available.\n\n" +
+                $"  Current:  {info.Current}\n" +
+                $"  Latest:    {info.Latest}  ({info.ReleaseName})\n\n" +
+                "Open the download page?",
+                "VastSpinup - update available",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Information);
+            if (result == MessageBoxResult.Yes && !string.IsNullOrEmpty(info.HtmlUrl))
+            {
+                try { Process.Start(new ProcessStartInfo(info.HtmlUrl) { UseShellExecute = true }); }
+                catch (Exception ex) { AppLog.Warn("Failed to open release URL", ex); }
+            }
+        }));
     }
 
     private Task PromptForApiKeyAsync()
@@ -646,6 +676,21 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
     void IOrchestratorHost.SetProgress(double progress) => Progress = progress;
     void IOrchestratorHost.SetInstanceExtraStatus(long instanceId, string? msg) => SetInstanceExtraStatus(instanceId, msg);
     void IOrchestratorHost.ShowIncompatibleModelPopup(ModelEntry model, bool multimodal) => ShowIncompatibleModelPopup(model, multimodal);
+    void IOrchestratorHost.NotifyInstanceReady(long instanceId, string title, string body)
+    {
+        // Fire-and-forget on the dispatcher so the orchestrator's await chain completes (including
+        // the `finally` that unregisters the spinup CTS) before the MessageBox blocks the UI.
+        Application.Current?.Dispatcher.BeginInvoke(new Action(() =>
+        {
+            try { System.Media.SystemSounds.Asterisk.Play(); } catch { }
+            MessageBox.Show(
+                Application.Current?.MainWindow,
+                body,
+                $"VastSpinup - {title}",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }));
+    }
     Task IOrchestratorHost.RefreshInstancesAsync(bool silent) => RefreshInstancesAsync(silent);
     void IOrchestratorHost.AddDeadOffer(long offerId) => _deadOfferIds.Add(offerId);
     void IOrchestratorHost.AddMultimodalIncompatible(long instanceId) => _multimodalIncompatibleInstances.Add(instanceId);

@@ -69,6 +69,9 @@ public class RentOrchestrator
             _host.SetInstanceExtraStatus(instanceId, "READY - click 'Use' to wire up opencode.");
             _host.AppendLog($"=== READY ===  Endpoint: {ollamaUrl}");
             _host.SetProgress(100);
+            _host.NotifyInstanceReady(instanceId,
+                "Instance ready",
+                $"Instance {instanceId} is ready.\n\n{model.OllamaTag} is loaded at {ollamaUrl}.\n\nClick 'Use' on the instance row to wire up opencode.");
         }
         finally
         {
