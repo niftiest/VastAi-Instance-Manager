@@ -7,6 +7,8 @@ Click an offer → rent → wait while it pulls the model → use a remote LLM f
 as if it were local. The app keeps history (host stats, favorites, per-machine notes) so
 repeat rentals are faster and you remember which hosts behaved badly.
 
+![Main window](screenshots/main_screen.jpg)
+
 ## What it does
 
 - **Search vast.ai offers** filtered by VRAM, disk, reliability, and a per-model "fit" check.
@@ -24,6 +26,19 @@ repeat rentals are faster and you remember which hosts behaved badly.
   Ollama template hash.
 - **Search HuggingFace + Ollama library** with size, modality, and tools-capability enrichment so
   you can add new models confidently. Top 100 by likes loads by default.
+
+### Add a model from HuggingFace
+
+The HF search dialog pre-loads the 100 most-liked GGUF repos so you land on something useful,
+then auto-derives the Ollama tag, model size, recommended sampling params, modality
+(`text`/`+vis`/`+aud`/`+v/a`/`multi`), and tools-capability cross-reference from the Ollama library:
+
+![HF model search](screenshots/model_search.jpg)
+
+The picked metadata flows into the model edit dialog, pre-populating every field so you only
+edit what you want to override:
+
+![Edit model](screenshots/model_settings.jpg)
 
 ## Quick start
 
