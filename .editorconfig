@@ -1,0 +1,24 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{json,yml,yaml,xml,xaml,csproj,sln}]
+indent_size = 2
+
+[*.{md,txt}]
+trim_trailing_whitespace = false
+
+[*.cs]
+# File-scoped namespaces and modern C# style — match what's already in the codebase.
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_style_var_for_built_in_types = true:none
+csharp_style_var_when_type_is_apparent = true:none
+csharp_prefer_braces = false:none
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false

@@ -1,0 +1,96 @@
+name: build
+
+# Runs on every push and PR to main. The .NET 8 WPF app is windows-only, so the matrix is
+# a single windows-latest runner. Tests cover the pure decision logic (smoke classifier,
+# offer ranking, modality, GGUF picker, Ollama HTML parser) — small + fast (~20 ms).
+#
+# A signed/unsigned single-file Windows binary is published on every push (artifact, 14d retention)
+# and additionally attached to a GitHub Release when a tag matching v* is pushed.
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write   # required for the release step to upload the .exe to a Release
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore VastSpinup.sln
+
+      - name: Build (Release)
+        run: dotnet build VastSpinup.sln --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test VastSpinup.sln --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --verbosity normal
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/TestResults/*.trx'
+          retention-days: 14
+
+  publish:
+    needs: build-and-test
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # Self-contained single-file Windows x64 binary. ~140 MB but no .NET install required by
+      # the end user. PublishReadyToRun=true bakes ahead-of-time compiled native code so cold-start
+      # is faster; IncludeNativeLibrariesForSelfExtract=true rolls the unmanaged libs into the .exe.
+      - name: Publish self-contained win-x64
+        run: >
+          dotnet publish VastSpinup.Wpf/VastSpinup.Wpf.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:PublishReadyToRun=true
+          --output publish/win-x64
+
+      - name: Stamp the binary with the commit SHA
+        shell: pwsh
+        run: |
+          $sha = "${{ github.sha }}".Substring(0,7)
+          $tag = "${{ github.ref_name }}"
+          $zipName = if ("${{ github.ref_type }}" -eq "tag") { "VastSpinup-$tag-win-x64.zip" } else { "VastSpinup-$sha-win-x64.zip" }
+          Compress-Archive -Path publish/win-x64/* -DestinationPath $zipName -Force
+          echo "ARTIFACT_NAME=$zipName" >> $env:GITHUB_ENV
+
+      - name: Upload publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VastSpinup-win-x64
+          path: ${{ env.ARTIFACT_NAME }}
+          retention-days: 30
+
+      - name: Create GitHub Release (tag pushes only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ARTIFACT_NAME }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
