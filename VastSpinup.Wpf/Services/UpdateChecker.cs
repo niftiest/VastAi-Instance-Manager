@@ -13,7 +13,7 @@ namespace VastSpinup.Services;
 public static class UpdateChecker
 {
     /// <summary>"owner/name" of the GitHub repo to poll. UPDATE THIS if you fork.</summary>
-    public const string GitHubRepo = "cpaec/VastSpinup";
+    public const string GitHubRepo = "niftiest/VastSpinup";
 
     public record UpdateInfo(Version Latest, Version Current, string TagName, string HtmlUrl, string ReleaseName);
 
