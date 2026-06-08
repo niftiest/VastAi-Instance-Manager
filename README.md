@@ -1,4 +1,4 @@
-# VastSpinup
+# Vast.ai Instance Manager
 
 Rent a vast.ai GPU, get [Ollama](https://ollama.com) running on it, and wire
 [OpenCode](https://opencode.ai) up to it. All from one Windows app, in a few clicks,
@@ -54,7 +54,7 @@ found, so you only touch the ones you want to override.
 ## Get started
 
 Grab the latest release from the [Releases](../../releases) page, unzip, and run
-`VastSpinup.Wpf.exe`. First launch will prompt for your vast.ai API key. The app
+`VastAiInstanceManager.Wpf.exe`. First launch will prompt for your vast.ai API key. The app
 remembers its window position between launches and quietly checks for new releases
 on startup.
 
@@ -65,8 +65,8 @@ kept current via Windows Update).
 ## Build from source
 
 ```powershell
-dotnet build VastSpinup.sln
-dotnet run --project VastSpinup.Wpf
+dotnet build VastAiInstanceManager.sln
+dotnet run --project VastAiInstanceManager.Wpf
 ```
 
 ## License

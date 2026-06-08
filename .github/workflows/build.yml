@@ -30,13 +30,13 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore
-        run: dotnet restore VastSpinup.sln
+        run: dotnet restore VastAiInstanceManager.sln
 
       - name: Build (Release)
-        run: dotnet build VastSpinup.sln --no-restore --configuration Release
+        run: dotnet build VastAiInstanceManager.sln --no-restore --configuration Release
 
       - name: Test
-        run: dotnet test VastSpinup.sln --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --verbosity normal
+        run: dotnet test VastAiInstanceManager.sln --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --verbosity normal
 
       - name: Upload test results
         if: always()
@@ -65,7 +65,7 @@ jobs:
       # ends up bundling 150+ MB of managed deps even in framework-dependent mode.
       - name: Publish framework-dependent win-x64
         run: >
-          dotnet publish VastSpinup.Wpf/VastSpinup.Wpf.csproj
+          dotnet publish VastAiInstanceManager.Wpf/VastAiInstanceManager.Wpf.csproj
           --configuration Release
           --runtime win-x64
           --self-contained false
@@ -76,14 +76,14 @@ jobs:
         run: |
           $sha = "${{ github.sha }}".Substring(0,7)
           $tag = "${{ github.ref_name }}"
-          $zipName = if ("${{ github.ref_type }}" -eq "tag") { "VastSpinup-$tag-win-x64.zip" } else { "VastSpinup-$sha-win-x64.zip" }
+          $zipName = if ("${{ github.ref_type }}" -eq "tag") { "VastAiInstanceManager-$tag-win-x64.zip" } else { "VastAiInstanceManager-$sha-win-x64.zip" }
           Compress-Archive -Path publish/win-x64/* -DestinationPath $zipName -Force
           echo "ARTIFACT_NAME=$zipName" >> $env:GITHUB_ENV
 
       - name: Upload publish artifact
         uses: actions/upload-artifact@v4
         with:
-          name: VastSpinup-win-x64
+          name: VastAiInstanceManager-win-x64
           path: ${{ env.ARTIFACT_NAME }}
           retention-days: 30
 
