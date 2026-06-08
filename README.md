@@ -21,7 +21,8 @@ without the manual SSH and config dance.
   pulls your model, and smoke-tests it
 - Tracks per-host boot and Ollama-ready times so the second rental on a known good
   host shows a real time estimate
-- Live progress bar and status messages through every phase
+- Live progress bar and status messages through every phase, plus a sound and popup
+  when the instance hits READY so you can switch tabs while it works
 
 **Catch broken setups before you waste time**
 - If the smoke test fails the app tells you whether the **host** is broken (different
@@ -53,7 +54,9 @@ found, so you only touch the ones you want to override.
 ## Get started
 
 Grab the latest release from the [Releases](../../releases) page, unzip, and run
-`VastSpinup.Wpf.exe`. First launch will prompt for your vast.ai API key.
+`VastSpinup.Wpf.exe`. First launch will prompt for your vast.ai API key. The app
+remembers its window position between launches and quietly checks for new releases
+on startup.
 
 **Requires:** Windows 10/11 and the
 [.NET 8 Desktop Runtime](https://aka.ms/dotnet/download) (one-time install, ~50 MB,
