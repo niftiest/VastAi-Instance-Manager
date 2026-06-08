@@ -9,16 +9,21 @@
     <RootNamespace>VastAiInstanceManager.Wpf</RootNamespace>
     <AssemblyName>VastAiInstanceManager.Wpf</AssemblyName>
 
-    <!-- Assembly + product metadata. Surfaces in app properties, log lines, and crash reports. -->
-    <Product>VastAiInstanceManager</Product>
-    <AssemblyTitle>VastAiInstanceManager</AssemblyTitle>
-    <Description>WPF desktop app for provisioning vast.ai GPU instances and wiring them up to local Ollama / OpenCode workflows.</Description>
+    <!-- Assembly + product metadata. Surfaces in app properties (right-click .exe -> Details),
+         log lines, and crash reports. Display-name form for user-visible fields; code identifier
+         for the assembly name. -->
+    <Product>Vast.ai Instance Manager</Product>
+    <AssemblyTitle>Vast.ai Instance Manager</AssemblyTitle>
+    <Description>Windows desktop app for renting vast.ai GPU instances, running Ollama on them, and wiring them up to local OpenCode workflows.</Description>
     <Authors>cpaec</Authors>
     <Company>cpaec</Company>
     <Copyright>Copyright © cpaec</Copyright>
     <Version>0.1.0</Version>
     <AssemblyVersion>0.1.0.0</AssemblyVersion>
     <FileVersion>0.1.0.0</FileVersion>
+
+    <!-- The .ico baked into the .exe (shown in Explorer, taskbar, Alt-Tab, title bar). -->
+    <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
