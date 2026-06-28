@@ -139,7 +139,7 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
         RentCommand = new AsyncRelayCommand(RentAsync, () => _api != null && SelectedOffer != null && SelectedModel != null);
         CancelSpinupCommand = new RelayCommand(CancelLatestSpinup, () => _activeSpinups.Count > 0);
         RefreshInstancesCommand = new AsyncRelayCommand(() => RefreshInstancesAsync(silent: false));
-        UseInstanceCommand = new RelayCommand(UseInstance, () => SelectedInstance != null);
+        UseInstanceCommand = new AsyncRelayCommand(UseInstanceAsync, () => SelectedInstance != null);
         FavoriteInstanceCommand = new RelayCommand(ToggleFavorite, () => SelectedInstance != null);
         NotesInstanceCommand = new RelayCommand(EditNotes, () => SelectedInstance != null);
         ChangeModelCommand = new AsyncRelayCommand(ChangeModelAsync, () => SelectedInstance != null);
@@ -462,7 +462,7 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
         if (SelectedModel != null) PopulateOffers(_currentOffers, SelectedModel);
     }
 
-    private void UseInstance()
+    private async Task UseInstanceAsync()
     {
         var inst = SelectedInstance?.Instance;
         if (inst == null) return;
@@ -470,9 +470,79 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
         var port = inst.GetExternalPortFor(11434);
         if (inst.PublicIpAddr == null || port == null) { MessageBox.Show("Instance has no Ollama port mapping."); return; }
         var url = $"http://{inst.PublicIpAddr}:{port}";
+        var ollama = new OllamaApi(url);
+
+        // Pre-flight: confirm the chosen model is actually loaded on this instance. Without this
+        // check, a failed pull during the original rent leaves the instance reachable but empty,
+        // and opencode hits "invalid model name" on every request.
+        Status = "Verifying model is loaded on the instance...";
+        List<string> installed;
+        try { installed = await ollama.ListModelsAsync(); }
+        catch (Exception ex)
+        {
+            AppLog.Warn("UseInstance: ListModels failed", ex);
+            MessageBox.Show(
+                $"Could not reach Ollama on this instance:\n\n{ex.Message}\n\nNo config was written.",
+                "Vast.ai Instance Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+            Status = "Use failed: Ollama unreachable.";
+            return;
+        }
+
+        var wanted = SelectedModel.OllamaTag.Contains(':') ? SelectedModel.OllamaTag : $"{SelectedModel.OllamaTag}:latest";
+        bool present = installed.Any(t =>
+            string.Equals(t, wanted, StringComparison.OrdinalIgnoreCase) ||
+            // Tolerate ':latest' drift in either direction.
+            string.Equals(t.TrimEnd(':', 'l', 'a', 't', 'e', 's', 't'), wanted.TrimEnd(':', 'l', 'a', 't', 'e', 's', 't'), StringComparison.OrdinalIgnoreCase));
+
+        if (!present)
+        {
+            var installedList = installed.Count == 0 ? "  (nothing)" : "  " + string.Join("\n  ", installed);
+            var choice = MessageBox.Show(
+                $"'{wanted}' isn't loaded on this instance.\n\nInstalled models:\n{installedList}\n\nPull it now? (will take several minutes)",
+                "Model not loaded", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+            if (choice != MessageBoxResult.Yes)
+            {
+                AppendLog($"Use cancelled: '{wanted}' not on instance.");
+                Status = choice == MessageBoxResult.No ? "Use cancelled - pick a different model or pull manually." : "Use cancelled.";
+                return;
+            }
+            // Pull inline. Reuse the rent flow's progress-callback shape so the log + status look familiar.
+            try { await PullModelInlineAsync(ollama, SelectedModel.OllamaTag); }
+            catch (Exception ex)
+            {
+                AppLog.Warn("UseInstance: inline pull failed", ex);
+                MessageBox.Show(
+                    $"Pull failed:\n\n{ex.Message}\n\nNo config was written. Try a different model.",
+                    "Vast.ai Instance Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+                Status = "Pull failed - no config written.";
+                return;
+            }
+        }
+
         OpencodeConfigWriter.Write(url, SelectedModel, inst.Id);
         AppendLog($"Wired opencoderemote -> {url} (model: {SelectedModel.OllamaTag})");
+        Status = "opencode wired up.";
         MessageBox.Show($"opencode-remote.json now points at {url}");
+    }
+
+    private async Task PullModelInlineAsync(OllamaApi ollama, string tag)
+    {
+        Status = $"Pulling {tag}...";
+        AppendLog($"Pulling {tag} (on-demand from Use)...");
+        string lastPhase = "";
+        var progress = new Progress<(string status, long? total, long? completed)>(p =>
+        {
+            string label = p.status;
+            if (p.total.HasValue && p.completed.HasValue && p.total > 0)
+            {
+                int pct = (int)((p.completed.Value * 100.0) / p.total.Value);
+                label = $"{p.status} {pct}% ({p.completed.Value / 1_073_741_824.0:F2}/{p.total.Value / 1_073_741_824.0:F2} GB)";
+            }
+            Status = label;
+            if (p.status != lastPhase) { lastPhase = p.status; AppendLog($"  [pull] {p.status}"); }
+        });
+        await ollama.PullModelAsync(tag, progress, CancellationToken.None);
+        AppendLog($"Pull complete: {tag}");
     }
 
     private async Task StartInstanceAsync()
