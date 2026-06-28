@@ -12,6 +12,8 @@ public class ModelEntry
     [JsonPropertyName("temperature")] public double Temperature { get; set; } = 0.7;
     [JsonPropertyName("top_p")] public double TopP { get; set; } = 0.9;
     [JsonPropertyName("top_k")] public int TopK { get; set; } = 40;
+    [JsonPropertyName("min_p")] public double MinP { get; set; } = 0.0;
+    [JsonPropertyName("repeat_penalty")] public double RepeatPenalty { get; set; } = 1.1;
     [JsonPropertyName("model_size_gb")] public double ModelSizeGb { get; set; }
     [JsonPropertyName("notes")] public string Notes { get; set; } = "";
 

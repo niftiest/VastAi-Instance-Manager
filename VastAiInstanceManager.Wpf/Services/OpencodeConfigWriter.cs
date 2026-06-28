@@ -38,8 +38,8 @@ public static class OpencodeConfigWriter
                                 ["temperature"]    = model.Temperature,
                                 ["top_p"]          = model.TopP,
                                 ["top_k"]          = model.TopK,
-                                ["min_p"]          = 0.0,
-                                ["repeat_penalty"] = 1.05,
+                                ["min_p"]          = model.MinP,
+                                ["repeat_penalty"] = model.RepeatPenalty,
                             }
                         }
                     }

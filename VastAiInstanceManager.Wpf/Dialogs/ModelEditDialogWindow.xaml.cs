@@ -29,6 +29,8 @@ public partial class ModelEditDialogWindow : Window
             TempBox.Text = existing.Temperature.ToString("F2", CultureInfo.InvariantCulture);
             TopPBox.Text = existing.TopP.ToString("F2", CultureInfo.InvariantCulture);
             TopKBox.Text = existing.TopK.ToString();
+            MinPBox.Text = existing.MinP.ToString("F2", CultureInfo.InvariantCulture);
+            RepeatPenaltyBox.Text = existing.RepeatPenalty.ToString("F2", CultureInfo.InvariantCulture);
             MaxPriceBox.Text = existing.MaxPricePerHour.HasValue ? existing.MaxPricePerHour.Value.ToString("F3", CultureInfo.InvariantCulture) : "0";
             MinRelBox.Text = existing.MinReliability.ToString("F3", CultureInfo.InvariantCulture);
             NotesBox.Text = existing.Notes;
@@ -39,6 +41,7 @@ public partial class ModelEditDialogWindow : Window
         {
             VramBox.Text = "24"; DiskBox.Text = "35"; SizeBox.Text = "19";
             CtxBox.Text = "16384"; TempBox.Text = "0.7"; TopPBox.Text = "0.9"; TopKBox.Text = "40";
+            MinPBox.Text = "0.00"; RepeatPenaltyBox.Text = "1.10";
             MaxPriceBox.Text = "0"; MinRelBox.Text = "0.95";
             Title = "Add Model";
         }
@@ -73,6 +76,8 @@ public partial class ModelEditDialogWindow : Window
         if (overrides.TopP.HasValue) template.TopP = overrides.TopP.Value;
         if (overrides.TopK.HasValue) template.TopK = overrides.TopK.Value;
         if (overrides.NumCtx.HasValue) template.NumCtx = overrides.NumCtx.Value;
+        if (overrides.MinP.HasValue) template.MinP = overrides.MinP.Value;
+        if (overrides.RepeatPenalty.HasValue) template.RepeatPenalty = overrides.RepeatPenalty.Value;
 
         NameBox.Text = template.Name;
         TagBox.Text = template.OllamaTag;
@@ -83,6 +88,8 @@ public partial class ModelEditDialogWindow : Window
         TempBox.Text = template.Temperature.ToString("F2", CultureInfo.InvariantCulture);
         TopPBox.Text = template.TopP.ToString("F2", CultureInfo.InvariantCulture);
         TopKBox.Text = template.TopK.ToString();
+        MinPBox.Text = template.MinP.ToString("F2", CultureInfo.InvariantCulture);
+        RepeatPenaltyBox.Text = template.RepeatPenalty.ToString("F2", CultureInfo.InvariantCulture);
 
         var notes = template.Notes;
         var sources = new List<string>();
@@ -112,8 +119,9 @@ public partial class ModelEditDialogWindow : Window
         if (!TryD(VramBox.Text, out var vram) || !TryD(DiskBox.Text, out var disk) ||
             !TryD(SizeBox.Text, out var sizeGb) || !TryD(CtxBox.Text, out var ctx) ||
             !TryD(TempBox.Text, out var temp) || !TryD(TopPBox.Text, out var topP) ||
-            !TryD(TopKBox.Text, out var topK) || !TryD(MaxPriceBox.Text, out var maxPrice) ||
-            !TryD(MinRelBox.Text, out var minRel))
+            !TryD(TopKBox.Text, out var topK) || !TryD(MinPBox.Text, out var minP) ||
+            !TryD(RepeatPenaltyBox.Text, out var repeatPenalty) ||
+            !TryD(MaxPriceBox.Text, out var maxPrice) || !TryD(MinRelBox.Text, out var minRel))
         {
             MessageBox.Show("One of the numeric fields couldn't be parsed.");
             return;
@@ -132,6 +140,10 @@ public partial class ModelEditDialogWindow : Window
             Temperature = Math.Clamp(temp, 0, 2),
             TopP = Math.Clamp(topP, 0, 1),
             TopK = (int)Math.Clamp(topK, 0, 1000),
+            MinP = Math.Clamp(minP, 0, 1),
+            // Repeat penalty: 1.0 = no penalty, <1 actually rewards repetition, >1 discourages it.
+            // Cap at 2.0 to keep wildly broken values out.
+            RepeatPenalty = Math.Clamp(repeatPenalty, 0, 2),
             Notes = NotesBox.Text.Trim(),
             Modality = _modality,
             MaxPricePerHour = maxPrice > 0 ? Math.Clamp(maxPrice, 0, 100) : null,
