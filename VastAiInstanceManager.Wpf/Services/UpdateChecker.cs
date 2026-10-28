@@ -13,7 +13,7 @@ namespace VastAiInstanceManager.Services;
 public static class UpdateChecker
 {
     /// <summary>"owner/name" of the GitHub repo to poll. UPDATE THIS if you fork.</summary>
-    public const string GitHubRepo = "niftiest/VastAiInstanceManager";
+    public const string GitHubRepo = "niftiest/VastAi-Instance-Manager";
 
     public record UpdateInfo(Version Latest, Version Current, string TagName, string HtmlUrl, string ReleaseName);
 
