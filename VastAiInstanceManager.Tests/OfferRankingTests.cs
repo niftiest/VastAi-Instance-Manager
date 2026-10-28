@@ -18,9 +18,10 @@ public class OfferRankingTests
 
     /// <summary>Build an offer with enough VRAM to fit so EstimateTokensPerSec uses the
     /// "fits" branch (gives realistic t/s). gpuMemBwGbs is the primary driver.</summary>
-    private static VastOffer Offer(long id, int numGpus, double price, int vramGb, double bwGbs)
+    private static VastOffer Offer(long id, int numGpus, double price, int vramGb, double bwGbs, double dlCostPerGb = 0)
         => new()
         {
+            InetDownCostPerGb = dlCostPerGb,
             Id = id,
             NumGpus = numGpus,
             GpuName = $"GPU-{id}",
@@ -89,5 +90,25 @@ public class OfferRankingTests
         var paid = Offer(2, 1, 1.0, 24, 800);
         var picks = OfferRanking.Compute(new[] { free, paid }, Model());
         Assert.Same(paid, picks.BestValue);   // free was filtered, paid wins by default
+    }
+
+    [Fact]
+    public void BestPrice_includes_model_pull_cost()
+    {
+        // Real case: $0.646/hr host at $40/TB vs a slightly pricier host with near-free bandwidth.
+        // For a 19 GB model the $40/TB pull adds ~$0.74, so the "cheaper" host is really more expensive.
+        var cheapRateExpensiveBw = Offer(1, 1, 0.646, 40, 1600, dlCostPerGb: 40.0 / 1024);
+        var pricierRateCheapBw = Offer(2, 1, 0.700, 40, 1600, dlCostPerGb: 2.67 / 1024);
+        var picks = OfferRanking.Compute(new[] { cheapRateExpensiveBw, pricierRateCheapBw }, Model());
+        Assert.Same(pricierRateCheapBw, picks.BestPrice);
+        Assert.Same(pricierRateCheapBw, picks.BestValue);
+    }
+
+    [Fact]
+    public void EffectiveHourlyCost_adds_amortized_pull()
+    {
+        var o = Offer(1, 1, 0.50, 24, 900, dlCostPerGb: 0.04);
+        // 19 GB * $0.04 = $0.76 spread over AmortizeHours.
+        Assert.Equal(0.50 + 0.76 / OfferRanking.AmortizeHours, OfferRanking.EffectiveHourlyCost(o, Model()), 6);
     }
 }

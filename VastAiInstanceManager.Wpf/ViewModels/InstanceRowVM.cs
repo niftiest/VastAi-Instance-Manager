@@ -4,15 +4,17 @@ using VastAiInstanceManager.Wpf.Mvvm;
 namespace VastAiInstanceManager.Wpf.ViewModels;
 
 /// <summary>One row in the instances DataGrid. Uptime/Spent are recomputed on the polling tick
-/// by rebuilding the displayed values via property setters.</summary>
+/// by rebuilding the displayed values via property setters. Spent shows vast.ai's billed charges
+/// when available, else falls back to a "~" estimate from uptime × $/hr.</summary>
 public class InstanceRowVM : ObservableObject
 {
     public VastInstance Instance { get; }
 
-    public InstanceRowVM(VastInstance instance, string? extraStatus = null)
+    public InstanceRowVM(VastInstance instance, string? extraStatus = null, InstanceCharges? charges = null)
     {
         Instance = instance;
         _extraStatus = extraStatus;
+        _charges = charges;
         Refresh();
     }
 
@@ -39,6 +41,16 @@ public class InstanceRowVM : ObservableObject
     private string _spent = "-";
     public string Spent { get => _spent; set => SetField(ref _spent, value); }
 
+    private string _spentDetail = "";
+    public string SpentDetail { get => _spentDetail; set => SetField(ref _spentDetail, value); }
+
+    private InstanceCharges? _charges;
+    public InstanceCharges? Charges
+    {
+        get => _charges;
+        set { _charges = value; Refresh(); }
+    }
+
     private string? _extraStatus;
     public string Message
     {
@@ -50,6 +62,15 @@ public class InstanceRowVM : ObservableObject
     public void Refresh()
     {
         Uptime = Instance.UptimeDisplay;
-        Spent = Instance.SpentDisplay;
+        if (_charges != null)
+        {
+            Spent = $"${_charges.Total:F3}";
+            SpentDetail = _charges.Breakdown;
+        }
+        else
+        {
+            Spent = Instance.SpentDollars.HasValue ? $"~${Instance.SpentDollars.Value:F3}" : "-";
+            SpentDetail = "Estimate (uptime × $/hr) - billed charges not loaded yet.\nExcludes bandwidth; counts image-loading time at the full rate.";
+        }
     }
 }

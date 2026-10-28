@@ -18,6 +18,8 @@ public class VastOffer
     [JsonPropertyName("disk_space")] public double DiskSpaceGb { get; set; }
     [JsonPropertyName("inet_up")] public double InetUpMbps { get; set; }
     [JsonPropertyName("inet_down")] public double InetDownMbps { get; set; }
+    [JsonPropertyName("inet_down_cost")] public double InetDownCostPerGb { get; set; }   // $/GB downloaded, set by the host
+    [JsonPropertyName("inet_up_cost")] public double InetUpCostPerGb { get; set; }       // $/GB uploaded
     [JsonPropertyName("geolocation")] public string Geolocation { get; set; } = "";
     [JsonPropertyName("cpu_name")] public string CpuName { get; set; } = "";
     [JsonPropertyName("cpu_ram")] public int CpuRamMb { get; set; }
@@ -52,6 +54,12 @@ public class VastOffer
         if (!fits) return (int)(GpuMemBwGbs / modelSizeGb * eff * 0.15);
         return (int)(GpuMemBwGbs / modelSizeGb * eff * realFactor);
     }
+
+    /// <summary>Download bandwidth price in $/TB (vast.ai bills 1 TB = 1024 GB).</summary>
+    public double InetDownCostPerTb => InetDownCostPerGb * 1024;
+
+    /// <summary>Bandwidth cost of pulling the model weights onto this host. Billed in every instance state.</summary>
+    public double EstimatePullCost(double modelSizeGb) => modelSizeGb > 0 ? modelSizeGb * InetDownCostPerGb : 0;
 
     public bool FitsModel(double modelSizeGb) => TotalVramGb >= modelSizeGb * 1.15;
 }

@@ -35,6 +35,7 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
 
     private readonly DispatcherTimer _pollTimer = new() { Interval = TimeSpan.FromSeconds(7) };
     private readonly DispatcherTimer _uptimeTimer = new() { Interval = TimeSpan.FromSeconds(1) };
+    private Dictionary<long, InstanceCharges> _charges = new();
     private readonly DispatcherTimer _balanceTimer = new() { Interval = TimeSpan.FromSeconds(30) };
 
     public ObservableCollection<ModelEntry> Models { get; } = new();
@@ -167,6 +168,8 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
         {
             try { await UpdateBalanceAsync(); }
             catch (Exception ex) { AppLog.Warn("Balance-timer UpdateBalance crashed", ex); }
+            try { await UpdateChargesAsync(); }
+            catch (Exception ex) { AppLog.Warn("Balance-timer UpdateCharges crashed", ex); }
         };
     }
 
@@ -189,6 +192,7 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
         }
         await CheckAuthAsync();
         await RefreshInstancesAsync(silent: true);
+        await UpdateChargesAsync();
         _pollTimer.Start();
 
         // Background update check - fire and forget. If a newer version exists, prompt the user.
@@ -283,6 +287,28 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
         catch { }
     }
 
+    /// <summary>Pulls exact billed amounts (GPU + disk + bandwidth) for the listed instances so the
+    /// Spent column shows what vast.ai actually charged instead of an uptime estimate.</summary>
+    private async Task UpdateChargesAsync()
+    {
+        if (_api == null || Instances.Count == 0) return;
+        var oldestStart = Instances
+            .Where(r => r.Instance.StartDate is > 0)
+            .Select(r => (long)r.Instance.StartDate!.Value)
+            .DefaultIfEmpty(DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+            .Min();
+        try
+        {
+            _charges = await _api.GetInstanceChargesAsync(DateTimeOffset.FromUnixTimeSeconds(oldestStart));
+            foreach (var row in Instances)
+            {
+                _charges.TryGetValue(row.Id, out var c);
+                row.Charges = c;
+            }
+        }
+        catch (Exception ex) { AppLog.Warn("Charges fetch failed", ex); }
+    }
+
     private async Task OnModelChangedAsync()
     {
         if (SelectedModel == null)
@@ -359,7 +385,11 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
         BestValueText = picks.BestValue == null ? "BEST VALUE: -" : $"BEST VALUE: {Fmt(picks.BestValue, model)}";
 
         static string Fmt(VastOffer o, ModelEntry m)
-            => $"{o.NumGpus}x {o.GpuName} - ${o.DphTotal:F3}/hr - {o.EstimateTokensPerSec(m.ModelSizeGb)} t/s";
+        {
+            var pull = o.EstimatePullCost(m.ModelSizeGb);
+            var pullText = pull >= 0.005 ? $" + ${pull:F2} pull" : "";
+            return $"{o.NumGpus}x {o.GpuName} - ${o.DphTotal:F3}/hr{pullText} - {o.EstimateTokensPerSec(m.ModelSizeGb)} t/s";
+        }
     }
 
     private void ResetPicks()
@@ -394,7 +424,8 @@ public class MainViewModel : ObservableObject, IOrchestratorHost
             foreach (var i in list.OrderByDescending(x => x.Id))
             {
                 _instanceExtraStatus.TryGetValue(i.Id, out var extra);
-                Instances.Add(new InstanceRowVM(i, extra));
+                _charges.TryGetValue(i.Id, out var charges);
+                Instances.Add(new InstanceRowVM(i, extra, charges));
             }
             if (selectedId.HasValue)
                 SelectedInstance = Instances.FirstOrDefault(r => r.Id == selectedId.Value);

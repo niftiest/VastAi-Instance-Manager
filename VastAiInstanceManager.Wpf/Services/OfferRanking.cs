@@ -11,13 +11,21 @@ public static class OfferRanking
 {
     public record Picks(VastOffer? BestPrice, VastOffer? Fastest, VastOffer? BestValue);
 
+    /// <summary>Session length the one-time model download is spread over when comparing prices.
+    /// Bandwidth varies ~$0-$40+/TB across hosts, so a 15 GB pull can cost as much as an hour of GPU.</summary>
+    public const double AmortizeHours = 1.0;
+
+    /// <summary>Effective $/hr for the first <see cref="AmortizeHours"/>: hourly rate plus the model pull cost spread over it.</summary>
+    public static double EffectiveHourlyCost(VastOffer o, ModelEntry model)
+        => o.DphTotal + o.EstimatePullCost(model.ModelSizeGb) / AmortizeHours;
+
     public static Picks Compute(IReadOnlyList<VastOffer> fitting, ModelEntry model)
     {
         if (fitting == null || fitting.Count == 0) return new(null, null, null);
 
-        var cheapest = fitting.OrderBy(o => o.DphTotal).First();
+        var cheapest = fitting.OrderBy(o => EffectiveHourlyCost(o, model)).First();
         var fastest = fitting.OrderByDescending(o => o.EstimateTokensPerSec(model.ModelSizeGb)).First();
-        // Throughput-weighted value: t/s² / $/hr. Plain t/s ÷ $/hr was too easily won by
+        // Throughput-weighted value: t/s² / effective $/hr. Plain t/s ÷ $/hr was too easily won by
         // dirt-cheap slow GPUs (price has a wider spread than throughput), making BEST VALUE
         // collapse onto BEST PRICE. Squaring t/s rewards real throughput while still penalising cost.
         var bestVal = fitting
@@ -25,7 +33,7 @@ public static class OfferRanking
             .OrderByDescending(o =>
             {
                 var tps = o.EstimateTokensPerSec(model.ModelSizeGb);
-                return (double)tps * tps / o.DphTotal;
+                return (double)tps * tps / EffectiveHourlyCost(o, model);
             })
             .FirstOrDefault() ?? cheapest;
 

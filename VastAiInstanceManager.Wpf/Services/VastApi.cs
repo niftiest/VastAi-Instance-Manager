@@ -55,6 +55,35 @@ public class VastApi
         return await JsonSerializer.DeserializeAsync<JsonElement>(await resp.Content.ReadAsStreamAsync(ct), JsonOpts, ct);
     }
 
+    /// <summary>Exact billed amounts per instance (GPU, disk, bandwidth) from GET /charges/, for days
+    /// overlapping [since, now]. Charges are bucketed per UTC day and update within ~30s of real time.</summary>
+    public async Task<Dictionary<long, InstanceCharges>> GetInstanceChargesAsync(DateTimeOffset since, CancellationToken ct = default)
+    {
+        // Day buckets are stamped at UTC midnight, so widen the range back to the start of 'since''s day.
+        var from = new DateTimeOffset(since.UtcDateTime.Date, TimeSpan.Zero).ToUnixTimeSeconds();
+        var to = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var filters = JsonSerializer.Serialize(new
+        {
+            day = new { gte = from, lte = to },
+            type = new Dictionary<string, string[]> { ["in"] = new[] { "instance" } },
+        });
+
+        var result = new Dictionary<long, InstanceCharges>();
+        string? token = null;
+        for (int page = 0; page < 20; page++)
+        {
+            var url = $"{BaseUrl}/charges/?limit=500&select_filters={Uri.EscapeDataString(filters)}";
+            if (token != null) url += $"&after_token={Uri.EscapeDataString(token)}";
+            var resp = await _http.GetAsync(url, ct);
+            await ThrowIfFail(resp);
+            var doc = await JsonSerializer.DeserializeAsync<JsonElement>(await resp.Content.ReadAsStreamAsync(ct), JsonOpts, ct);
+            InstanceCharges.MergePage(doc, result);
+            token = doc.TryGetProperty("next_token", out var nt) && nt.ValueKind == JsonValueKind.String ? nt.GetString() : null;
+            if (string.IsNullOrEmpty(token)) break;
+        }
+        return result;
+    }
+
     public async Task<List<VastOffer>> SearchOffersAsync(
         int vramGb, int diskGb, double minReliability, double? maxPrice,
         bool requireDirectPorts = true,

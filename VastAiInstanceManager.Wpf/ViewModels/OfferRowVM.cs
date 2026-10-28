@@ -19,6 +19,8 @@ public class OfferRowVM
     public string Tps { get; }
     public string Disk { get; }
     public string Net { get; }
+    public string DlCost { get; }
+    public string PullCost { get; }
     /// <summary>Three-state: "✓" warm, "✗" known-slow, "" unknown.</summary>
     public string Cached { get; }
     public string? Note { get; }
@@ -38,6 +40,8 @@ public class OfferRowVM
         Tps = $"~{offer.EstimateTokensPerSec(model.ModelSizeGb)} t/s";
         Disk = $"{offer.DiskSpaceGb:F0} GB";
         Net = $"{offer.InetDownMbps:F0}/{offer.InetUpMbps:F0}";
+        DlCost = $"${offer.InetDownCostPerTb:F2}";
+        PullCost = $"${offer.EstimatePullCost(model.ModelSizeGb):F2}";
 
         var stats = hostStats.Get(offer.MachineId);
         Cached = stats == null ? "" : (stats.AvgBootSec > slowBootThresholdSec ? "✗" : "✓");

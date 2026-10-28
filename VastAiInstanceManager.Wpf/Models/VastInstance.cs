@@ -69,8 +69,6 @@ public class VastInstance
         }
     }
 
-    public string SpentDisplay => SpentDollars.HasValue ? $"${SpentDollars.Value:F3}" : "-";
-
     // 'ports' is Docker-style mapping dict like {"11434/tcp": [{"HostIp": "0.0.0.0", "HostPort": "17626"}]}
     [JsonPropertyName("ports")] public System.Text.Json.JsonElement? PortsRaw { get; set; }
 

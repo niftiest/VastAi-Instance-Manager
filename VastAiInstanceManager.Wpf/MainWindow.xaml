@@ -70,6 +70,8 @@
                         <DataGridTextColumn Header="Est t/s" Binding="{Binding Tps}" Width="90" />
                         <DataGridTextColumn Header="Disk" Binding="{Binding Disk}" Width="80" SortMemberPath="Offer.DiskSpaceGb" />
                         <DataGridTextColumn Header="Net (D/U)" Binding="{Binding Net}" Width="120" />
+                        <DataGridTextColumn Header="DL $/TB" Binding="{Binding DlCost}" Width="80" SortMemberPath="Offer.InetDownCostPerGb" />
+                        <DataGridTextColumn Header="Pull $" Binding="{Binding PullCost}" Width="70" SortMemberPath="Offer.InetDownCostPerGb" />
                         <DataGridTextColumn Header="Cached" Binding="{Binding Cached}" Width="70" />
                         <DataGridTextColumn Header="Notes" Binding="{Binding Note}" Width="*">
                             <DataGridTextColumn.ElementStyle>
@@ -129,7 +131,13 @@
                         </DataGridTemplateColumn>
                         <DataGridTextColumn Header="$/hr" Binding="{Binding Price}" Width="80" />
                         <DataGridTextColumn Header="Uptime" Binding="{Binding Uptime}" Width="110" />
-                        <DataGridTextColumn Header="Spent" Binding="{Binding Spent}" Width="80" />
+                        <DataGridTextColumn Header="Spent" Binding="{Binding Spent}" Width="80">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="ToolTip" Value="{Binding SpentDetail}" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Header="Endpoint" Binding="{Binding Endpoint}" Width="240" />
                         <DataGridTextColumn Header="Public IP" Binding="{Binding Ip}" Width="140" />
                         <DataGridTextColumn Header="SSH" Binding="{Binding Ssh}" Width="180" />
