@@ -29,11 +29,11 @@ public partial class ManageModelsDialogWindow : Window
 
     private void AddButton_Click(object sender, RoutedEventArgs e)
     {
-        var hf = new HuggingFaceSearchDialogWindow { Owner = this };
-        var hfOk = hf.ShowDialog() == true && hf.Selected != null;
+        var hf = new HuggingFaceSearchDialogWindow { Owner = this, AllowManualEntry = true };
+        if (hf.ShowDialog() != true) return;
 
         var edit = new ModelEditDialogWindow { Owner = this };
-        if (hfOk) edit.ApplyHfResult(hf);
+        if (hf.Selected != null) edit.ApplyHfResult(hf);
         if (edit.ShowDialog() != true) return;
 
         if (_models.ContainsKey(edit.Key)) { MessageBox.Show("Key already exists."); return; }

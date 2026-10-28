@@ -24,6 +24,13 @@ public partial class HuggingFaceSearchDialogWindow : Window
     public System.Text.Json.JsonElement? SelectedRegistryParams { get; private set; }
     public List<string> SelectedWarnings { get; private set; } = new();
 
+    // Shows an "Enter manually" button that closes with DialogResult=true and Selected=null.
+    public bool AllowManualEntry
+    {
+        get => ManualButton.Visibility == Visibility.Visible;
+        set => ManualButton.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
+    }
+
     public HuggingFaceSearchDialogWindow()
     {
         InitializeComponent();
@@ -218,6 +225,12 @@ public partial class HuggingFaceSearchDialogWindow : Window
                 return;
             }
         }
+    }
+
+    private void Manual_Click(object sender, RoutedEventArgs e)
+    {
+        Selected = null;
+        DialogResult = true;
     }
 
     private void Results_DoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
